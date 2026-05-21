@@ -1,0 +1,5 @@
+.vercel
+.env*.local
+
+# Trạng thái shard tạm (local); dùng shard-status.example.json làm mẫu
+config/shard-status.json
