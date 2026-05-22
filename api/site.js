@@ -18,7 +18,6 @@ module.exports = async (req, res) => {
   try {
     const query = req.query || {};
     let domain = query.domain;
-    domain = "news.thetimenews.co";
 
     // chỉ cho phép 1 mode
     if (!domain) {
@@ -26,6 +25,10 @@ module.exports = async (req, res) => {
         ok: false,
         error: "Require exactly one of: domain",
       });
+    }
+
+    if (domain.startsWith("localhost")) {
+      domain = "news.thetimenews.co";
     }
 
     const siteItem = await site.getOne({ domain });
@@ -45,9 +48,10 @@ module.exports = async (req, res) => {
         host: siteItem.domain,
         origin: siteItem.origin,
         name: siteItem.name,
-        icon: "/vercel.svg",
-        logo: "/next.svg",
+        icon: "/default.png",
+        logo: "/default.png",
         theme: siteItem.theme,
+        siteCaregory: siteItem.siteCategory,
         seo: {
           title: siteItem.domain,
           description: `${siteItem.domain} news site`,
@@ -81,6 +85,14 @@ module.exports = async (req, res) => {
             slug: "disclamer",
           },
         ],
+        verification: {
+          google: siteItem.verification?.google,
+          yandex: siteItem.verification?.yandex,
+          yahoo: siteItem.verification?.yahoo,
+          other: {
+            me: siteItem.verification?.other.me,
+          },
+        },
       },
     });
   } catch (err) {

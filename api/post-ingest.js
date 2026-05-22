@@ -85,7 +85,7 @@ module.exports = async (req, res) => {
     const newItemSitemapBuffer = await sitemapBuffer.insert({
       payload: {
         domain: newItem.doc.domain,
-        url: `https://${newItem.doc.domain}/${newItem.doc.segment}/${newItem.doc.slug}`,
+        url: `https://${newItem.doc.domain}/post/${newItem.doc.segment}/${newItem.doc.slug}`,
       },
     });
 
