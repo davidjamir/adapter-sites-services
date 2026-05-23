@@ -12,9 +12,9 @@ module.exports = async (req, res) => {
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
-  if (!isAuthorized(req)) {
-    return res.status(401).json({ ok: false, error: "Unauthorized" });
-  }
+  // if (!isAuthorized(req)) {
+  //   return res.status(401).json({ ok: false, error: "Unauthorized" });
+  // }
 
   try {
     const query = req.query || {};
@@ -32,6 +32,17 @@ module.exports = async (req, res) => {
       domain = "news.thetimenews.co";
     }
 
+    if (process.env.REQUIRE_REDIS_CACHE === "true") {
+      const siteCache = await redis.get(`site:${domain}`);
+      if (siteCache) {
+        return res.status(200).json({
+          ok: true,
+          source: "redis-cached",
+          site: siteCache,
+        });
+      }
+    }
+
     const siteItem = await site.getOne({ domain });
     if (!siteItem) {
       return res.status(404).json({
@@ -42,77 +53,81 @@ module.exports = async (req, res) => {
 
     const originItem = await origin.getOne({ origin: siteItem.origin });
 
-    return res.status(200).json({
-      ok: true,
-      site: {
-        id: siteItem._id,
-        host: siteItem.domain,
-        origin: siteItem.origin,
-        name: siteItem.name,
-        icon: "default.png",
-        logo: "default.png",
-        theme: "news",
-        siteCaregory: siteItem.siteCategory,
-        seo: {
-          title: "News Theme",
-          description: `${siteItem.domain} news site`,
-          canonicalUrl: `https://${siteItem.domain}`,
+    const item = {
+      id: siteItem._id,
+      host: siteItem.domain,
+      origin: siteItem.origin,
+      name: siteItem.name,
+      icon: "default.png",
+      logo: "default.png",
+      theme: "news",
+      siteCaregory: siteItem.siteCategory,
+      seo: {
+        title: "News Theme",
+        description: `${siteItem.domain} news site`,
+        canonicalUrl: `https://${siteItem.domain}`,
+      },
+      ads: {
+        adsTxt:
+          "google.com, pub-1234567890, DIRECT, f08c47fec0942fa0 \ngoogle.com, pub-1234567890, DIRECT, f08c47fec0942fa0",
+      },
+      script: [
+        {
+          id: "adsense",
+          src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxx",
+          async: true,
+          defer: false,
+          crossOrigin: "anonymous",
+          strategy: "afterInteractive",
+          enabled: false,
         },
-        ads: {
-          adsTxt:
-            "google.com, pub-1234567890, DIRECT, f08c47fec0942fa0 \ngoogle.com, pub-1234567890, DIRECT, f08c47fec0942fa0",
+        {
+          id: "mgid",
+          src: "https://jsc.mgid.com/site/1043437.js",
+          async: true,
+          defer: false,
+          enabled: false,
         },
-        script: [
-          {
-            id: "adsense",
-            src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxx",
-            async: true,
-            defer: false,
-            crossOrigin: "anonymous",
-            strategy: "afterInteractive",
-            enabled: false,
-          },
-          {
-            id: "mgid",
-            src: "https://jsc.mgid.com/site/1043437.js",
-            async: true,
-            defer: false,
-            enabled: false,
-          },
-        ],
-        categories: [
-          {
-            id: "1",
-            name: "Category 1",
-            slug: "category-1",
-          },
-          {
-            id: "2",
-            name: "Category 2",
-            slug: "category-2",
-          },
-        ],
-        pages: [
-          {
-            id: "1",
-            name: "Page 1",
-            slug: "about",
-          },
-          {
-            id: "2",
-            name: "Page 2",
-            slug: "disclamer",
-          },
-        ],
-        verification: {
-          google: siteItem.verification?.google,
-          yandex: siteItem.verification?.yandex,
-          yahoo: siteItem.verification?.yahoo,
-          other: {
-            me: siteItem.verification?.other.me,
-          },
+      ],
+      categories: [
+        {
+          id: "1",
+          name: "Category 1",
+          slug: "category-1",
+        },
+        {
+          id: "2",
+          name: "Category 2",
+          slug: "category-2",
+        },
+      ],
+      pages: [
+        {
+          id: "1",
+          name: "Page 1",
+          slug: "about",
+        },
+        {
+          id: "2",
+          name: "Page 2",
+          slug: "disclamer",
+        },
+      ],
+      verification: {
+        google: siteItem.verification?.google,
+        yandex: siteItem.verification?.yandex,
+        yahoo: siteItem.verification?.yahoo,
+        other: {
+          me: siteItem.verification?.other.me,
         },
       },
+    };
+
+    await redis.set(`site:${domain}`, item, 600);
+    return res.status(200).json({
+      ok: true,
+      source: "mongo-database",
+      site: item,
     });
   } catch (err) {
     console.log("[api/site] error: ", err);
