@@ -4,6 +4,7 @@ const { toStr } = require("../helper/toString");
 const storageIndex = require("../src/storage-index");
 const site = require("../src/site");
 const origin = require("../src/origin");
+const { redis } = require("../database/redis/index");
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store, max-age=0");
@@ -50,10 +51,10 @@ module.exports = async (req, res) => {
         name: siteItem.name,
         icon: "default.png",
         logo: "default.png",
-        theme: siteItem.theme,
+        theme: "news",
         siteCaregory: siteItem.siteCategory,
         seo: {
-          title: siteItem.domain,
+          title: "News Theme",
           description: `${siteItem.domain} news site`,
           canonicalUrl: `https://${siteItem.domain}`,
         },

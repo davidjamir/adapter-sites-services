@@ -3,6 +3,7 @@ const { toStr } = require("../helper/toString");
 const { formatPubDate } = require("../helper/date");
 const storageIndex = require("../src/storage-index");
 const site = require("../src/site");
+const { redis } = require("../database/redis/index");
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store, max-age=0");

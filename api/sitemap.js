@@ -3,6 +3,7 @@ const { isAuthorized } = require("../helper/isAuthorized");
 const { toStr } = require("../helper/toString");
 const sitemapBuffer = require("../src/sitemap-buffer");
 const sitemap = require("../src/sitemap");
+const { redis } = require("../database/redis/index");
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store, max-age=0");
