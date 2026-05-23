@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
 
   try {
     const query = req.query || {};
-    const domain = query.domain;
+    let domain = query.domain;
     const segment = query.segment;
     const slug = query.slug;
 
@@ -26,6 +26,10 @@ module.exports = async (req, res) => {
         ok: false,
         error: "Require exactly one of: domain, segment, slug",
       });
+    }
+
+    if (domain.startsWith("localhost")) {
+      domain = "news.thetimenews.co";
     }
 
     const siteItem = await site.getOne({ domain });

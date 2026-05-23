@@ -48,8 +48,8 @@ module.exports = async (req, res) => {
         host: siteItem.domain,
         origin: siteItem.origin,
         name: siteItem.name,
-        icon: "/default.png",
-        logo: "/default.png",
+        icon: "default.png",
+        logo: "default.png",
         theme: siteItem.theme,
         siteCaregory: siteItem.siteCategory,
         seo: {
@@ -61,6 +61,24 @@ module.exports = async (req, res) => {
           adsTxt:
             "google.com, pub-1234567890, DIRECT, f08c47fec0942fa0 \ngoogle.com, pub-1234567890, DIRECT, f08c47fec0942fa0",
         },
+        script: [
+          {
+            id: "adsense",
+            src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxx",
+            async: true,
+            defer: false,
+            crossOrigin: "anonymous",
+            strategy: "afterInteractive",
+            enabled: false,
+          },
+          {
+            id: "mgid",
+            src: "https://jsc.mgid.com/site/1043437.js",
+            async: true,
+            defer: false,
+            enabled: false,
+          },
+        ],
         categories: [
           {
             id: "1",

@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
 
   try {
     const query = req.query || {};
-    const domain = query.domain;
+    let domain = query.domain;
     const id = query.id;
 
     // chỉ cho phép 1 mode
@@ -29,6 +29,10 @@ module.exports = async (req, res) => {
 
     // mode: domain -> lấy danh sách sitemap
     if (domain) {
+      if (domain.startsWith("localhost")) {
+        domain = "news.thetimenews.co";
+      }
+
       const items = await sitemap.getMany({
         filter: { domain },
       });

@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
 
   try {
     const query = req.query || {};
-    const domain = query.domain;
+    let domain = query.domain;
     const category = query.category;
 
     // chỉ cho phép 1 mode
@@ -25,6 +25,10 @@ module.exports = async (req, res) => {
         ok: false,
         error: "Require exactly one of: domain",
       });
+    }
+
+    if (domain.startsWith("localhost")) {
+      domain = "news.thetimenews.co";
     }
 
     const siteItem = await site.getOne({ domain });
