@@ -11,9 +11,9 @@ module.exports = async (req, res) => {
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
-  if (!isAuthorized(req)) {
-    return res.status(401).json({ ok: false, error: "Unauthorized" });
-  }
+  // if (!isAuthorized(req)) {
+  //   return res.status(401).json({ ok: false, error: "Unauthorized" });
+  // }
 
   try {
     const query = req.query || {};
@@ -34,20 +34,48 @@ module.exports = async (req, res) => {
         domain = "news.thetimenews.co";
       }
 
-      const items = await sitemap.getMany({
-        filter: { domain },
-      });
+      if (process.env.REQUIRE_REDIS_CACHE === "true") {
+        const siteCache = await redis.get(`sitemap:${domain}`);
+        if (siteCache) {
+          return res.status(200).json({
+            ok: true,
+            source: "redis-cached",
+            items: siteCache,
+          });
+        }
+      }
+
+      const items = (
+        await sitemap.getMany({
+          filter: { domain },
+        })
+      ).map((i) => ({
+        sitemapId: i.sitemapId,
+        domain: i.domain,
+        status: i.status,
+        createdAt: i.createdAt,
+        updatedAt: i.updatedAt,
+      }));
+
+      await redis.set(`sitemap:${domain}`, items, 600);
 
       return res.status(200).json({
         ok: true,
-        items: items.map((i) => ({
-          sitemapId: i.sitemapId,
-          domain: i.domain,
-          status: i.status,
-          createdAt: i.createdAt,
-          updatedAt: i.updatedAt,
-        })),
+        source: "mongo-database",
+        items: items,
       });
+    }
+
+    if (process.env.REQUIRE_REDIS_CACHE === "true") {
+      const siteCache = await redis.get(`sitemap:${domain}:${id}`);
+      if (siteCache) {
+        return res.status(200).json({
+          ok: true,
+          source: "redis-cached",
+          sitemapId: id,
+          items: siteCache,
+        });
+      }
     }
 
     // mode: id -> lấy sitemap item
@@ -60,22 +88,26 @@ module.exports = async (req, res) => {
       });
     }
 
-    const items = await sitemapBuffer.getMany({
-      filter: {
-        sitemapId: sitemapItem.sitemapId,
-      },
-    });
+    const items = (
+      await sitemapBuffer.getMany({
+        filter: {
+          sitemapId: sitemapItem.sitemapId,
+        },
+      })
+    ).map((i) => ({
+      domain: i.domain,
+      sitemapId: i.sitemapId,
+      url: i.url,
+      createdAt: i.createdAt,
+      updatedAt: i.updatedAt,
+    }));
 
+    await redis.set(`sitemap:${domain}:${id}`, items, 600);
     return res.status(200).json({
       ok: true,
+      source: "mongo-database",
       sitemapId: sitemapItem.sitemapId,
-      items: items.map((i) => ({
-        domain: i.domain,
-        sitemapId: i.sitemapId,
-        url: i.url,
-        createdAt: i.createdAt,
-        updatedAt: i.updatedAt,
-      })),
+      items: items,
     });
   } catch (err) {
     console.log("[api/sitemap] error: ", err);
