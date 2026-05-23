@@ -6,7 +6,10 @@ const site = require("../src/site");
 const { redis } = require("../database/redis/index");
 
 module.exports = async (req, res) => {
-  res.setHeader("Cache-Control", "no-store, max-age=0");
+   res.setHeader(
+    "Cache-Control",
+    "public, max-age=30, s-maxage=300, stale-while-revalidate=600, stale-if-error=86400",
+  );
 
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
