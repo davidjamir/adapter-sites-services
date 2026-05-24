@@ -1,0 +1,1 @@
+export const MAX_DEFAULT_ITEMS = 10;

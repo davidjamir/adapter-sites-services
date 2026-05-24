@@ -1,7 +1,6 @@
 const db = require("../database/collections/sitemap-buffer");
 const sitemap = require("./sitemap");
-
-const MAX_DEFAULT_ITEMS = 10;
+const { MAX_DEFAULT_ITEMS } = require("../constants");
 
 async function insert(input) {
   const payload = input.payload;
@@ -31,7 +30,10 @@ async function insert(input) {
     },
   });
 
-  await sitemap.incItems({ domain: result.domain });
+  await sitemap.incItems({
+    domain: result.domain,
+    sitemapId: sitemaItem.sitemapId,
+  });
   return result;
 }
 
