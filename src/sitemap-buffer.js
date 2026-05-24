@@ -33,7 +33,7 @@ async function insert(input) {
 
   await sitemap.incItems({
     domain: result.domain,
-    sitemapId: sitemaItem.sitemapId,
+    sitemapId: sitemapItem.sitemapId,
   });
   return result;
 }
