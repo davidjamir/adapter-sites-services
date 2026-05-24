@@ -35,10 +35,12 @@ module.exports = async (req, res) => {
     });
 
     const config = configs[randomInt(0, configs.length - 1)];
+    const categories = [...body.item?.categories, "News"];
     const payload = {
       ...body.item,
       segment: config.segment,
-      mainCategory: body.item?.categories[0] || "News",
+      categories,
+      mainCategory: categories[0],
       author: genAuthor(),
     };
     const newItem = await storage.insert({
