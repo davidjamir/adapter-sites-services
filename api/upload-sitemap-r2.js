@@ -13,6 +13,10 @@ module.exports = async (req, res) => {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
 
+  if (!isAuthorized(req)) {
+    return res.status(401).json({ ok: false, error: "Unauthorized" });
+  }
+
   try {
     const sitemaps = await sitemap.getMany({
       filter: {
