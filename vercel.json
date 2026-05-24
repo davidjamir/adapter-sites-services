@@ -1,11 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": null,
-  "crons": [
-    {
-      "path": "/api/upload-sitemap-r2",
-      "schedule": "0 0 * * *"
-    }
-  ]
+  "buildCommand": null
 }

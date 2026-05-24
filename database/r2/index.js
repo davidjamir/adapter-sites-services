@@ -30,8 +30,8 @@ export class R2 {
     return process.env[`R2_BUCKET${shardId}`];
   }
 
-  buildKey(shardId, key) {
-    return `${shardId}:${key}`;
+  buildKey(shardId, key, folder) {
+    return `${folder}/${shardId}:${key}`;
   }
 
   async streamToString(stream) {
@@ -44,13 +44,13 @@ export class R2 {
 
   // ========== SET ==========
 
-  async set(key, value, ttl = 36000) {
+  async set(key, value, folder = "", ttl = 36000) {
     const shardId = this.randomShard();
 
     const client = this.getClient(shardId);
     const bucket = this.getBucket(shardId);
 
-    const finalKey = this.buildKey(shardId, key);
+    const finalKey = this.buildKey(shardId, key, folder);
 
     const body = Buffer.from(JSON.stringify(value));
 
@@ -66,18 +66,18 @@ export class R2 {
 
     return {
       shardId,
-      key,
-      storedKey: finalKey,
+      key: key,
+      storedKey: finalKey
     };
   }
 
   // ========== GET ==========
 
-  async get(shardId, key) {
+  async get(shardId, key, folder = "") {
     const client = this.getClient(shardId);
     const bucket = this.getBucket(shardId);
 
-    const finalKey = this.buildKey(shardId, key);
+    const finalKey = this.buildKey(shardId, key, folder);
 
     try {
       const res = await client.send(

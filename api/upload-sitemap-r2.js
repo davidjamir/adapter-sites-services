@@ -16,13 +16,14 @@ module.exports = async (req, res) => {
   try {
     const sitemaps = await sitemap.getMany({
       filter: {
+        dbMode: "mongodb",
         totalItems: {
           $gte: MAX_DEFAULT_ITEMS,
         },
       },
     });
 
-    const resutls = [];
+    const results = [];
     for (const sitemapItem of sitemaps) {
       const items = await sitemapBuffer.getMany({
         filter: {
@@ -30,13 +31,33 @@ module.exports = async (req, res) => {
         },
       });
 
-      const result = await r2.set(`sitemap:${sitemapItem.sitemapId}`, items);
+      const result = await r2.set(
+        `sitemap:${sitemapItem.sitemapId}`,
+        items,
+        sitemapItem.domain,
+      );
+
+      const updated = await sitemap.update({
+        filter: {
+          domain: sitemapItem.domain,
+          sitemapId: sitemapItem.sitemapId,
+        },
+        payload: {
+          shardIdR2: result.shardId,
+          keyR2: result.key,
+          dbMode: "r2-cloudflare",
+        },
+      });
+
+      await sitemapBuffer.deleteMany({
+        filter: { sitemapId: sitemapItem.sitemapId },
+      });
 
       results.push(result);
       console.log(sitemapItem.domain, items.length);
     }
 
-    return res.status(200).json({ ok: true, sitemaps, resutls });
+    return res.status(200).json({ ok: true, sitemaps, results });
   } catch (err) {
     console.log("[api/upload-to-r2] error: ", err);
     return res

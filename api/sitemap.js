@@ -4,9 +4,10 @@ const { toStr } = require("../helper/toString");
 const sitemapBuffer = require("../src/sitemap-buffer");
 const sitemap = require("../src/sitemap");
 const { redis } = require("../database/redis/index");
+const { r2 } = require("../database/r2/index");
 
 module.exports = async (req, res) => {
-   res.setHeader(
+  res.setHeader(
     "Cache-Control",
     "public, max-age=30, s-maxage=300, stale-while-revalidate=600, stale-if-error=86400",
   );
@@ -91,24 +92,34 @@ module.exports = async (req, res) => {
       });
     }
 
-    const items = (
-      await sitemapBuffer.getMany({
-        filter: {
-          sitemapId: sitemapItem.sitemapId,
-        },
-      })
-    ).map((i) => ({
-      domain: i.domain,
-      sitemapId: i.sitemapId,
-      url: i.url,
-      createdAt: i.createdAt,
-      updatedAt: i.updatedAt,
-    }));
+    const items =
+      sitemapItem.dbMode === "r2-cloudflare"
+        ? await r2.get(
+            sitemapItem.shardIdR2,
+            sitemapItem.keyR2,
+            sitemapItem.domain,
+          )
+        : (
+            await sitemapBuffer.getMany({
+              filter: {
+                sitemapId: sitemapItem.sitemapId,
+              },
+            })
+          ).map((i) => ({
+            domain: i.domain,
+            sitemapId: i.sitemapId,
+            url: i.url,
+            createdAt: i.createdAt,
+            updatedAt: i.updatedAt,
+          }));
 
     await redis.set(`sitemap:${domain}:${id}`, items, 600);
     return res.status(200).json({
       ok: true,
-      source: "mongo-database",
+      source:
+        sitemapItem.dbMode === "r2-cloudflare"
+          ? "r2-database"
+          : "mongo-database",
       sitemapId: sitemapItem.sitemapId,
       items: items,
     });

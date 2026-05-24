@@ -32,7 +32,6 @@ async function updateOneSitemap({
         status: "active",
         createdAt: new Date(),
         totalItems: 0,
-        dbMode: "mongodb",
       },
     },
     { upsert: true, returnDocument: "after", includeResultMetadata: true },
@@ -93,7 +92,7 @@ async function insertOneSitemap({ collectionName = COLLECTION_NAME, payload }) {
 module.exports = {
   getOneSitemap,
   getManySitemap,
-  //   updateOneSitemap,
+  updateOneSitemap,
   insertOneSitemap,
   incTotalItems,
 };

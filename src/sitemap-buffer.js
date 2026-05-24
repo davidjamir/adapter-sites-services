@@ -8,6 +8,7 @@ async function insert(input) {
   let sitemapItem = await sitemap.getOne({
     filter: {
       domain: payload.domain,
+      dbMode: "mongodb",
       totalItems: {
         $lt: MAX_DEFAULT_ITEMS,
       },
@@ -44,7 +45,7 @@ async function getMany(input) {
 
 async function deleteMany(input) {
   const filter = input.filter;
-  return db.incTotalItems({ filter });
+  return db.deleteManyItem({ filter });
 }
 
 const sitemapBuffer = {
