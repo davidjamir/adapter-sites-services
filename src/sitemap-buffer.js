@@ -1,6 +1,6 @@
 const db = require("../database/collections/sitemap-buffer");
 const sitemap = require("./sitemap");
-const { MAX_DEFAULT_ITEMS } = require("../constants");
+const { MAX_DEFAULT_ITEMS_EACH_SITEMAP } = require("../constants");
 
 async function insert(input) {
   const payload = input.payload;
@@ -10,7 +10,7 @@ async function insert(input) {
       domain: payload.domain,
       dbMode: "mongodb",
       totalItems: {
-        $lt: MAX_DEFAULT_ITEMS,
+        $lt: MAX_DEFAULT_ITEMS_EACH_SITEMAP,
       },
     },
   });

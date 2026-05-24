@@ -4,7 +4,7 @@ import {
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 
-const SHARD_COUNT = 1;
+const { R2_SHARD_COUNT } = require("../../constants");
 
 export class R2 {
   constructor() {}
@@ -12,7 +12,7 @@ export class R2 {
   // ========== SHARD LOGIC ==========
 
   randomShard() {
-    return Math.floor(Math.random() * SHARD_COUNT) + 1;
+    return Math.floor(Math.random() * R2_SHARD_COUNT) + 1;
   }
 
   getClient(shardId) {
@@ -67,7 +67,7 @@ export class R2 {
     return {
       shardId,
       key: key,
-      storedKey: finalKey
+      storedKey: finalKey,
     };
   }
 

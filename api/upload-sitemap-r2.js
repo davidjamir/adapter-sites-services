@@ -4,7 +4,7 @@ const { toStr } = require("../helper/toString");
 const sitemapBuffer = require("../src/sitemap-buffer");
 const sitemap = require("../src/sitemap");
 const { r2 } = require("../database/r2/index");
-const { MAX_DEFAULT_ITEMS } = require("../constants");
+const { MAX_DEFAULT_ITEMS_EACH_SITEMAP } = require("../constants");
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       filter: {
         dbMode: "mongodb",
         totalItems: {
-          $gte: MAX_DEFAULT_ITEMS,
+          $gte: MAX_DEFAULT_ITEMS_EACH_SITEMAP,
         },
       },
     });
