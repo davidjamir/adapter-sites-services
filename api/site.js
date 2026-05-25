@@ -108,13 +108,23 @@ module.exports = async (req, res) => {
       pages: [
         {
           id: "1",
-          name: "Page 1",
-          slug: "about",
+          name: "Privacy Policy",
+          slug: "/page/privacy-policy",
         },
         {
           id: "2",
-          name: "Page 2",
-          slug: "disclamer",
+          name: "Disclaimer",
+          slug: "/page/disclaimer",
+        },
+        {
+          id: "3",
+          name: "Terms and Conditions",
+          slug: "/page/terms-and-conditions",
+        },
+        {
+          id: "4",
+          name: "Contact Us",
+          slug: "/page/contact-us",
         },
       ],
       verification: {
