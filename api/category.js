@@ -6,7 +6,7 @@ const site = require("../src/site");
 const { redis } = require("../database/redis/index");
 
 module.exports = async (req, res) => {
-   res.setHeader(
+  res.setHeader(
     "Cache-Control",
     "public, max-age=30, s-maxage=300, stale-while-revalidate=600, stale-if-error=86400",
   );
@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
       })),
     });
   } catch (err) {
-    console.log("[api/feed] error: ", err);
+    console.log("[api/category] error: ", err);
     return res
       .status(500)
       .json({ ok: false, error: err?.message || "Internal Server Error" });

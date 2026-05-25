@@ -21,13 +21,13 @@ module.exports = async (req, res) => {
   try {
     const query = req.query || {};
     let domain = query.domain;
-    const 
+    const q = query.q;
 
     // chỉ cho phép 1 mode
-    if (!domain | !category) {
+    if (!domain && !q) {
       return res.status(400).json({
         ok: false,
-        error: "Require exactly one of: domain",
+        error: "Require exactly one of: domain or q",
       });
     }
 
@@ -43,10 +43,10 @@ module.exports = async (req, res) => {
       });
     }
     const items = await storageIndex.getMany({
-      filter: { domain: siteItem.domain, mainCategory: category },
+      filter: { domain: siteItem.domain, title: { $regex: q, $options: "i" } },
       indexDatabaseKey: siteItem.indexDatabaseKey,
       sort: { createdAt: -1 },
-      limit: 25,
+      limit: 20,
     });
     return res.status(200).json({
       ok: true,
@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
       })),
     });
   } catch (err) {
-    console.log("[api/feed] error: ", err);
+    console.log("[api/search] error: ", err);
     return res
       .status(500)
       .json({ ok: false, error: err?.message || "Internal Server Error" });
