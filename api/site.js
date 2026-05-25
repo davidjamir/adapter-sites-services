@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
 
     if (domain.startsWith("localhost")) {
       domain = "news.thetimenews.co";
-      baseUrl = `https://${originDomain}`;
+      baseUrl = `http://${originDomain}`;
     }
 
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
