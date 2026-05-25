@@ -77,6 +77,10 @@ module.exports = async (req, res) => {
       ads: {
         adsTxt:
           "google.com, pub-1234567890, DIRECT, f08c47fec0942fa0 \ngoogle.com, pub-1234567890, DIRECT, f08c47fec0942fa0",
+        adsScript: {
+          adsHeader:
+            "<script>console.log('This is ads header script')</script>",
+        },
       },
       script: [
         {
