@@ -69,6 +69,11 @@ module.exports = async (req, res) => {
       logo: "/images/default.png",
       theme: "news",
       siteCaregory: siteItem.siteCategory,
+      configView: {
+        category: "grid",
+        search: "list",
+        tag: "grid",
+      },
       seo: {
         title: "News Theme",
         description: `${siteItem.domain} news site`,
