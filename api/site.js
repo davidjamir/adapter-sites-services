@@ -61,8 +61,8 @@ module.exports = async (req, res) => {
       host: siteItem.domain,
       origin: siteItem.origin,
       name: siteItem.name,
-      icon: "default.png",
-      logo: "default.png",
+      icon: "/images/default.png",
+      logo: "/images/default.png",
       theme: "news",
       siteCaregory: siteItem.siteCategory,
       seo: {
