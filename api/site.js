@@ -21,7 +21,9 @@ module.exports = async (req, res) => {
 
   try {
     const query = req.query || {};
-    let domain = query.domain;
+    const originDomain = query.domain;
+    let domain = originDomain;
+    let baseUrl = "";
 
     // chỉ cho phép 1 mode
     if (!domain) {
@@ -33,6 +35,7 @@ module.exports = async (req, res) => {
 
     if (domain.startsWith("localhost")) {
       domain = "news.thetimenews.co";
+      baseUrl = `https://${originDomain}`;
     }
 
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
@@ -59,7 +62,7 @@ module.exports = async (req, res) => {
     const item = {
       id: siteItem._id,
       host: siteItem.domain,
-      baseUrl: `https://${siteItem.domain}`,
+      baseUrl: baseUrl ?? `https://${siteItem.domain}`,
       origin: siteItem.origin,
       name: siteItem.name,
       icon: "/images/default.png",
