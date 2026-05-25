@@ -59,6 +59,7 @@ module.exports = async (req, res) => {
     const item = {
       id: siteItem._id,
       host: siteItem.domain,
+      baseUrl: `https://${siteItem.domain}`,
       origin: siteItem.origin,
       name: siteItem.name,
       icon: "/images/default.png",
