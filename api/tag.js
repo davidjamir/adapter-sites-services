@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
       });
     }
     const items = await storageIndex.getMany({
-      filter: { domain: siteItem.domain, mainCategory: category },
+      filter: { domain: siteItem.domain, mainCategory: tag },
       // filter: {
       //   domain: siteItem.domain,
       //   tags: {
