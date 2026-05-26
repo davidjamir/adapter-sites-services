@@ -71,6 +71,7 @@ module.exports = async (req, res) => {
       categories: item.categories,
       segment: item.segment,
       author: item.author,
+      tags: item.tags || [],
       createdAt: formatPubDate(item.createdAt),
     }));
 

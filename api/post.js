@@ -69,6 +69,7 @@ module.exports = async (req, res) => {
       categories: item.categories,
       segment: item.segment,
       author: item.author,
+      tags: item.tags || [],
       createdAt: item.createdAt,
       content: item.content,
     };

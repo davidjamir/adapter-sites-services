@@ -76,6 +76,7 @@ module.exports = async (req, res) => {
       categories: newItem.doc.categories,
       mainCategory: newItem.doc.mainCategory,
       author: newItem.doc.author,
+      tags: newItem.doc.tags || [],
       indexDatabaseKey: siteItem.indexDatabaseKey || 1,
     };
 
