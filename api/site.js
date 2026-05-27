@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
     const item = {
       id: siteItem._id,
       host: siteItem.domain,
-      baseUrl: baseUrl ?? `https://${siteItem.domain}`,
+      baseUrl: baseUrl || `https://${siteItem.domain}`,
       origin: siteItem.origin,
       name: siteItem.name,
       icon: "/images/default.png",
@@ -140,11 +140,11 @@ module.exports = async (req, res) => {
         },
       ],
       verification: {
-        google: siteItem.verification?.google,
-        yandex: siteItem.verification?.yandex,
-        yahoo: siteItem.verification?.yahoo,
+        google: siteItem.verification?.google || "",
+        yandex: siteItem.verification?.yandex || "",
+        yahoo: siteItem.verification?.yahoo || "",
         other: {
-          me: siteItem.verification?.other.me,
+          me: siteItem.verification?.other.me || "",
         },
       },
     };
