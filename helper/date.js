@@ -11,7 +11,7 @@ export function formatNewYorkDate(dateString) {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  }).format(new Date(date));
+  }).format(new Date(dateString));
 
   return `${formatted} • New York`;
 }
