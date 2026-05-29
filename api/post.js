@@ -1,12 +1,12 @@
 const { isAuthorized } = require("../helper/isAuthorized");
 const { toStr } = require("../helper/toString");
-const { formatPubDate } = require("../helper/date");
+const { formatPubDate, formatNewYorkDate } = require("../helper/date");
 const storage = require("../src/storage");
 const site = require("../src/site");
 const { redis } = require("../database/redis/index");
 
 module.exports = async (req, res) => {
-   res.setHeader(
+  res.setHeader(
     "Cache-Control",
     "public, max-age=30, s-maxage=300, stale-while-revalidate=600, stale-if-error=86400",
   );
@@ -70,7 +70,7 @@ module.exports = async (req, res) => {
       segment: item.segment,
       author: item.author,
       tags: item.tags || [],
-      createdAt: item.createdAt,
+      createdAt: formatNewYorkDate(item.createdAt),
       content: item.content,
     };
 
