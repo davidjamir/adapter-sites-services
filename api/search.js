@@ -14,9 +14,9 @@ module.exports = async (req, res) => {
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
-  //   if (!isAuthorized(req)) {
-  //     return res.status(401).json({ ok: false, error: "Unauthorized" });
-  //   }
+    if (!isAuthorized(req)) {
+      return res.status(401).json({ ok: false, error: "Unauthorized" });
+    }
 
   try {
     const query = req.query || {};

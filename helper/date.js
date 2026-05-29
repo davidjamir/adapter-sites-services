@@ -13,5 +13,5 @@ export function formatNewYorkDate(dateString) {
     hour12: true,
   }).format(new Date(dateString));
 
-  return `${formatted} • New York`;
+  return `${formatted}, New York`;
 }
