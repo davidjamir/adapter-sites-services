@@ -14,9 +14,9 @@ module.exports = async (req, res) => {
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
-    if (!isAuthorized(req)) {
-      return res.status(401).json({ ok: false, error: "Unauthorized" });
-    }
+  if (!isAuthorized(req)) {
+    return res.status(401).json({ ok: false, error: "Unauthorized" });
+  }
 
   try {
     const query = req.query || {};
@@ -35,6 +35,18 @@ module.exports = async (req, res) => {
       domain = "news.thetimenews.co";
     }
 
+    if (process.env.REQUIRE_REDIS_CACHE === "true") {
+      const siteCache = await redis.get(`tag:${domain}:${tag}`);
+      if (siteCache) {
+        return res.status(200).json({
+          ok: true,
+          source: "redis-cached",
+          count: (siteCache || []).length,
+          items: siteCache,
+        });
+      }
+    }
+
     const siteItem = await site.getOne({ domain });
     if (!siteItem) {
       return res.status(404).json({
@@ -43,22 +55,20 @@ module.exports = async (req, res) => {
       });
     }
     const safeTag = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const items = await storageIndex.getMany({
-      filter: {
-        domain: siteItem.domain,
-        tags: {
-          $regex: safeTag,
-          $options: "i",
+    const items = await storageIndex
+      .getMany({
+        filter: {
+          domain: siteItem.domain,
+          tags: {
+            $regex: safeTag,
+            $options: "i",
+          },
         },
-      },
-      indexDatabaseKey: siteItem.indexDatabaseKey,
-      sort: { createdAt: -1 },
-      limit: 25,
-    });
-    return res.status(200).json({
-      ok: true,
-      count: items.length,
-      items: items.map((item) => ({
+        indexDatabaseKey: siteItem.indexDatabaseKey,
+        sort: { createdAt: -1 },
+        limit: 25,
+      })
+      .map((item) => ({
         id: item._id,
         title: item.title,
         slug: item.slug,
@@ -70,7 +80,13 @@ module.exports = async (req, res) => {
         segment: item.segment,
         author: item.author,
         createdAt: formatPubDate(item.createdAt),
-      })),
+      }));
+
+    await redis.set(`tag:${domain}:${tag}`, items, 600);
+    return res.status(200).json({
+      ok: true,
+      count: items.length,
+      items: items,
     });
   } catch (err) {
     console.log("[api/tag] error: ", err);

@@ -38,6 +38,18 @@ module.exports = async (req, res) => {
       domain = "news.thetimenews.co";
     }
 
+    if (process.env.REQUIRE_REDIS_CACHE === "true") {
+      const siteCache = await redis.get(`related:${domain}:${slug}`);
+      if (siteCache) {
+        return res.status(200).json({
+          ok: true,
+          source: "redis-cached",
+          count: (siteCache || []).length,
+          items: siteCache,
+        });
+      }
+    }
+
     const siteItem = await site.getOne({ domain });
     if (!siteItem) {
       return res.status(404).json({
@@ -73,23 +85,27 @@ module.exports = async (req, res) => {
       ];
     }
 
+    const newItems = items.map((item) => ({
+      id: item._id,
+      title: item.title,
+      slug: item.slug,
+      domain: item.domain,
+      featuredImage: item.featuredImage,
+      snippet: item.snippet,
+      mainCategory: item.mainCategory,
+      categories: item.categories,
+      segment: item.segment,
+      author: item.author,
+      tags: item.tags || [],
+      createdAt: formatPubDate(item.createdAt),
+    }));
+
+    await redis.set(`related:${domain}:${slug}`, newItems, 600);
+
     return res.status(200).json({
       ok: true,
       count: items.length,
-      items: items.map((item) => ({
-        id: item._id,
-        title: item.title,
-        slug: item.slug,
-        domain: item.domain,
-        featuredImage: item.featuredImage,
-        snippet: item.snippet,
-        mainCategory: item.mainCategory,
-        categories: item.categories,
-        segment: item.segment,
-        author: item.author,
-        tags: item.tags || [],
-        createdAt: formatPubDate(item.createdAt),
-      })),
+      items: newItems,
     });
   } catch (err) {
     console.log("[api/related] error: ", err);
