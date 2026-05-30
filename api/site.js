@@ -65,151 +65,29 @@ module.exports = async (req, res) => {
       baseUrl: baseUrl || `https://${siteItem.domain}`,
       origin: siteItem.origin,
       name: siteItem.name,
-      icon: "/images/default.png",
-      logo: "/images/default.png",
-      theme: "news",
+      icon: siteItem.icon || originItem.icon,
+      logo: siteItem.icon || originItem.icon,
+      theme: siteItem.theme || "news",
       siteCaregory: siteItem.siteCategory,
-      configView: {
-        category: "grid",
-        search: "list",
-        tag: "grid",
-      },
+      configView: siteItem.configView || originItem.configView,
+      ads: originItem.ads,
+      script: originItem.script,
+      categories: siteItem.categories || originItem.categories,
+      pages: siteItem.pages || originItem.pages,
+      verification: originItem.verification,
       seo: {
-        title: "News Theme",
-        description: `${siteItem.domain} news site`,
+        title: siteItem.name || originItem.seo.title,
+        description: siteItem.description || originItem.seo.description,
         canonicalUrl: `https://${siteItem.domain}`,
-      },
-      ads: {
-        adsTxt:
-          "google.com, pub-1234567890, DIRECT, f08c47fec0942fa0 \ngoogle.com, pub-1234567890, DIRECT, f08c47fec0942fa0",
-        adsScript: {
-          adsBody: {
-            beforePost: {
-              id: "ads-before-post",
-              source: "google-adsense",
-              content:
-                "<script>console.log('This is ads before post script')</script>",
-            },
-            afterPost: {
-              id: "ads-after-post",
-              source: "google-adsense",
-              content:
-                "<script>console.log('This is ads after post script')</script>",
-            },
-            inPost: [
-              {
-                id: "ads-in-post-1",
-                source: "google-adsense",
-                content:
-                  "<script>console.log('This is ads in post script 1')</script>",
-              },
-              {
-                id: "ads-in-post-2",
-                source: "google-adsense",
-                content:
-                  "<script>console.log('This is ads in post script 2')</script>",
-              },
-            ],
-          },
-          adsHeader: [
-            {
-              id: "ads-header-1",
-              source: "google-adsense",
-              content:
-                "<script>console.log('This is ads header script')</script>",
-            },
-          ],
-          adsFooter: [
-            {
-              id: "ads-footer-1",
-              source: "google-adsense",
-              content:
-                "<script>console.log('This is ads footer script')</script>",
-            },
-          ],
-          adsLeftSidebar: [
-            {
-              id: "ads-left-sidebar-1",
-              source: "google-adsense",
-              content:
-                "<script>console.log('This is ads left sidebar script')</script>",
-            },
-          ],
-          adsRightSidebar: [
-            {
-              id: "ads-right-sidebar-1",
-              source: "google-adsense",
-              content:
-                "<script>console.log('This is ads right sidebar script')</script>",
-            },
-          ],
-        },
-      },
-      script: [
-        {
-          id: "adsense",
-          src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxx",
-          async: true,
-          defer: false,
-          crossOrigin: "anonymous",
-          strategy: "afterInteractive",
-          enabled: false,
-        },
-        {
-          id: "mgid",
-          src: "https://jsc.mgid.com/site/1043437.js",
-          async: true,
-          defer: false,
-          enabled: false,
-        },
-      ],
-      categories: [
-        {
-          id: "1",
-          name: "Category 1",
-          slug: "category-1",
-        },
-        {
-          id: "2",
-          name: "Category 2",
-          slug: "category-2",
-        },
-      ],
-      pages: [
-        {
-          id: "1",
-          name: "Privacy Policy",
-          slug: "/page/privacy-policy",
-        },
-        {
-          id: "2",
-          name: "Disclaimer",
-          slug: "/page/disclaimer",
-        },
-        {
-          id: "3",
-          name: "Terms and Conditions",
-          slug: "/page/terms-and-conditions",
-        },
-        {
-          id: "4",
-          name: "Contact Us",
-          slug: "/page/contact-us",
-        },
-      ],
-      verification: {
-        google: siteItem.verification?.google || "",
-        yandex: siteItem.verification?.yandex || "",
-        yahoo: siteItem.verification?.yahoo || "",
-        other: {
-          me: siteItem.verification?.other.me || "",
-        },
       },
     };
 
     await redis.set(`site:${domain}`, item, 600);
     return res.status(200).json({
       ok: true,
+      time: new Date().toLocaleString("vi-VN", {
+        timeZone: "Asia/Ho_Chi_Minh",
+      }),
       source: "mongo-database",
       site: item,
     });
