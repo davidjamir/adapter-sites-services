@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
     }
 
     if (domain.startsWith("localhost")) {
-      domain = "news.thetimenews.co";
+      domain = "fanzone.thetimenews.us";
       baseUrl = `http://${originDomain}`;
     }
 
@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
       logo: siteItem.icon || originItem.icon,
       theme: siteItem.theme || "news",
       siteCategory: siteItem.siteCategory,
-      configView: siteItem.configView ,
+      configView: siteItem.configView,
       ads: originItem.ads,
       script: originItem.script || [],
       categories: siteItem.categories?.length
