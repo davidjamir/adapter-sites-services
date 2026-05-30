@@ -77,12 +77,12 @@ module.exports = async (req, res) => {
       mainCategory: newItem.doc.mainCategory,
       author: newItem.doc.author,
       tags: newItem.doc.tags || [],
-      indexDatabaseKey: siteItem.indexDatabaseKey || 1,
+      indexDatabaseKey: siteItem.indexDatabaseKey,
     };
 
     const postIndex = await storageIndex.insert({
       payload: payloadIndex,
-      indexDatabaseKey: 1,
+      indexDatabaseKey: payloadIndex.indexDatabaseKey,
     });
 
     const newItemSitemapBuffer = await sitemapBuffer.insert({

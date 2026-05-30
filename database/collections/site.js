@@ -1,6 +1,6 @@
 const { getCollection } = require("../mongodb/general-db");
 const COLLECTION_NAME = "sites";
-const DEFAULT_INDEX_DATABASE_KEY = 3;
+const { DATABASE_INDEX_SHARD_COUNT } = require("../../constants");
 
 async function getOneSite({ collectionName = COLLECTION_NAME, filter }) {
   const col = await getCollection(collectionName);
@@ -23,7 +23,8 @@ async function updateOneSite({
       },
       $setOnInsert: {
         status: "active",
-        indexDatabaseKey: DEFAULT_INDEX_DATABASE_KEY,
+        indexDatabaseKey:
+          Math.floor(Math.random() * DATABASE_INDEX_SHARD_COUNT) + 1,
         createdAt: new Date(),
         totalItems: 0,
       },
@@ -54,6 +55,7 @@ async function incTotalItems({
       $setOnInsert: {
         origin: payload.origin,
         domain: payload.domain,
+        status: "active",
         name: "",
         description: "",
         icon: "",
@@ -67,7 +69,8 @@ async function incTotalItems({
         },
         categories: [],
         pages: [],
-        indexDatabaseKey: DEFAULT_INDEX_DATABASE_KEY,
+        indexDatabaseKey:
+          Math.floor(Math.random() * DATABASE_INDEX_SHARD_COUNT) + 1,
         createdAt: new Date(),
       },
       $inc: {
