@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
   try {
     const query = req.query || {};
     let domain = query.domain;
-    const categories = query.categories || [];
+    const categories = query.categories ? query.categories.split(",") : [];
     const slug = query.slug;
 
     // chỉ cho phép 1 mode
