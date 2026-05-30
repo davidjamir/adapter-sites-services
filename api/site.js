@@ -68,12 +68,14 @@ module.exports = async (req, res) => {
       icon: siteItem.icon || originItem.icon,
       logo: siteItem.icon || originItem.icon,
       theme: siteItem.theme || "news",
-      siteCaregory: siteItem.siteCategory,
-      configView: siteItem.configView || originItem.configView,
+      siteCategory: siteItem.siteCategory,
+      configView: siteItem.configView ,
       ads: originItem.ads,
       script: originItem.script,
-      categories: siteItem.categories || originItem.categories,
-      pages: siteItem.pages || originItem.pages,
+      categories: siteItem.categories?.length
+        ? siteItem.categories
+        : originItem.categories,
+      pages: siteItem.pages?.length ? siteItem.pages : originItem.pages,
       verification: originItem.verification,
       seo: {
         title: siteItem.name || originItem.seo.title,
