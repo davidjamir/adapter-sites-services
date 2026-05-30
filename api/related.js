@@ -1,0 +1,100 @@
+const { isAuthorized } = require("../helper/isAuthorized");
+const { toStr } = require("../helper/toString");
+const { formatPubDate } = require("../helper/date");
+const storageIndex = require("../src/storage-index");
+const site = require("../src/site");
+const { redis } = require("../database/redis/index");
+
+const MAX_RELATED_POSTS = 3;
+
+module.exports = async (req, res) => {
+  res.setHeader(
+    "Cache-Control",
+    "public, max-age=30, s-maxage=300, stale-while-revalidate=600, stale-if-error=86400",
+  );
+
+  if (req.method !== "GET") {
+    return res.status(405).json({ ok: false, error: "Method Not Allowed" });
+  }
+  if (!isAuthorized(req)) {
+    return res.status(401).json({ ok: false, error: "Unauthorized" });
+  }
+
+  try {
+    const query = req.query || {};
+    let domain = query.domain;
+    const categories = query.categories || [];
+    const slug = query.slug;
+
+    // chỉ cho phép 1 mode
+    if (!domain || !slug) {
+      return res.status(400).json({
+        ok: false,
+        error: "Require exactly one of: domain, categories, slug",
+      });
+    }
+
+    if (domain.startsWith("localhost")) {
+      domain = "news.thetimenews.co";
+    }
+
+    const siteItem = await site.getOne({ domain });
+    if (!siteItem) {
+      return res.status(404).json({
+        ok: false,
+        error: "Site not found",
+      });
+    }
+    const items = await storageIndex.getMany({
+      filter: {
+        domain: siteItem.domain,
+        categories: { $in: categories },
+        slug: { $ne: slug },
+      },
+      indexDatabaseKey: siteItem.indexDatabaseKey,
+      sort: { createdAt: -1 },
+      limit: MAX_RELATED_POSTS,
+    });
+
+    if (items.length < MAX_RELATED_POSTS) {
+      const fallback = await storageIndex.getMany({
+        filter: {
+          domain: siteItem.domain,
+          slug: { $ne: slug },
+        },
+        indexDatabaseKey: siteItem.indexDatabaseKey,
+        sort: { createdAt: -1 },
+        limit: MAX_RELATED_POSTS - items.length,
+      });
+
+      items = [
+        ...items,
+        ...fallback.filter((x) => !items.some((y) => y.slug === x.slug)),
+      ];
+    }
+
+    return res.status(200).json({
+      ok: true,
+      count: items.length,
+      items: items.map((item) => ({
+        id: item._id,
+        title: item.title,
+        slug: item.slug,
+        domain: item.domain,
+        featuredImage: item.featuredImage,
+        snippet: item.snippet,
+        mainCategory: item.mainCategory,
+        categories: item.categories,
+        segment: item.segment,
+        author: item.author,
+        tags: item.tags || [],
+        createdAt: formatPubDate(item.createdAt),
+      })),
+    });
+  } catch (err) {
+    console.log("[api/related] error: ", err);
+    return res
+      .status(500)
+      .json({ ok: false, error: err?.message || "Internal Server Error" });
+  }
+};
