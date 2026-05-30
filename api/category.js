@@ -55,27 +55,27 @@ module.exports = async (req, res) => {
       });
     }
 
-    const items = await storageIndex
-      .getMany({
+    const items = (
+      await storageIndex.getMany({
         filter: { domain: siteItem.domain, mainCategory: category },
         indexDatabaseKey: siteItem.indexDatabaseKey,
         sort: { createdAt: -1 },
         limit: 25,
       })
-      .map((item) => ({
-        id: item._id,
-        title: item.title,
-        slug: item.slug,
-        domain: item.domain,
-        featuredImage: item.featuredImage,
-        snippet: item.snippet,
-        mainCategory: item.mainCategory,
-        categories: item.categories,
-        segment: item.segment,
-        author: item.author,
-        tags: item.tags || [],
-        createdAt: formatPubDate(item.createdAt),
-      }));
+    ).map((item) => ({
+      id: item._id,
+      title: item.title,
+      slug: item.slug,
+      domain: item.domain,
+      featuredImage: item.featuredImage,
+      snippet: item.snippet,
+      mainCategory: item.mainCategory,
+      categories: item.categories,
+      segment: item.segment,
+      author: item.author,
+      tags: item.tags || [],
+      createdAt: formatPubDate(item.createdAt),
+    }));
 
     await redis.set(`category:${domain}`, items, 600);
 

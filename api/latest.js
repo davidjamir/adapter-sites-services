@@ -53,27 +53,27 @@ module.exports = async (req, res) => {
         error: "Site not found",
       });
     }
-    const items = await storageIndex
-      .getMany({
+    const items = (
+      await storageIndex.getMany({
         filter: { domain: siteItem.domain },
         indexDatabaseKey: siteItem.indexDatabaseKey,
         sort: { createdAt: -1 },
         limit: 15,
       })
-      .map((item) => ({
-        id: item._id,
-        title: item.title,
-        slug: item.slug,
-        domain: item.domain,
-        featuredImage: item.featuredImage,
-        snippet: item.snippet,
-        mainCategory: item.mainCategory,
-        categories: item.categories,
-        segment: item.segment,
-        author: item.author,
-        tags: item.tags || [],
-        createdAt: formatPubDate(item.createdAt),
-      }));
+    ).map((item) => ({
+      id: item._id,
+      title: item.title,
+      slug: item.slug,
+      domain: item.domain,
+      featuredImage: item.featuredImage,
+      snippet: item.snippet,
+      mainCategory: item.mainCategory,
+      categories: item.categories,
+      segment: item.segment,
+      author: item.author,
+      tags: item.tags || [],
+      createdAt: formatPubDate(item.createdAt),
+    }));
 
     await redis.set(`latest:${domain}`, items, 600);
     return res.status(200).json({

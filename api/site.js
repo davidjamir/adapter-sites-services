@@ -71,7 +71,7 @@ module.exports = async (req, res) => {
       siteCategory: siteItem.siteCategory,
       configView: siteItem.configView ,
       ads: originItem.ads,
-      script: originItem.script,
+      script: originItem.script || [],
       categories: siteItem.categories?.length
         ? siteItem.categories
         : originItem.categories,
