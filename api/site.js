@@ -78,7 +78,7 @@ module.exports = async (req, res) => {
       pages: siteItem.pages?.length ? siteItem.pages : originItem.pages,
       verification: originItem.verification,
       seo: {
-        title: siteItem.name || originItem.seo.title,
+        title: siteItem.name || originItem.seo?.title,
         description: siteItem.description || originItem.seo.description,
         canonicalUrl: `https://${siteItem.domain}`,
       },
