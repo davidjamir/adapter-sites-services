@@ -83,8 +83,66 @@ module.exports = async (req, res) => {
         adsTxt:
           "google.com, pub-1234567890, DIRECT, f08c47fec0942fa0 \ngoogle.com, pub-1234567890, DIRECT, f08c47fec0942fa0",
         adsScript: {
-          adsHeader:
-            "<script>console.log('This is ads header script')</script>",
+          adsBody: {
+            beforePost: {
+              id: "ads-before-post",
+              source: "google-adsense",
+              content:
+                "<script>console.log('This is ads before post script')</script>",
+            },
+            afterPost: {
+              id: "ads-after-post",
+              source: "google-adsense",
+              content:
+                "<script>console.log('This is ads after post script')</script>",
+            },
+            inPost: [
+              {
+                id: "ads-in-post-1",
+                source: "google-adsense",
+                content:
+                  "<script>console.log('This is ads in post script 1')</script>",
+              },
+              {
+                id: "ads-in-post-2",
+                source: "google-adsense",
+                content:
+                  "<script>console.log('This is ads in post script 2')</script>",
+              },
+            ],
+          },
+          adsHeader: [
+            {
+              id: "ads-header-1",
+              source: "google-adsense",
+              content:
+                "<script>console.log('This is ads header script')</script>",
+            },
+          ],
+          adsFooter: [
+            {
+              id: "ads-footer-1",
+              source: "google-adsense",
+              content:
+                "<script>console.log('This is ads footer script')</script>",
+            },
+          ],
+          adsLeftSidebar: [
+            {
+              id: "ads-left-sidebar-1",
+              source: "google-adsense",
+              content:
+                "<script>console.log('This is ads left sidebar script')</script>",
+            },
+          ],
+          adsRightSidebar: [
+            {
+              id: "ads-right-sidebar-1",
+              source: "google-adsense",
+              content:
+                "<script>console.log('This is ads right sidebar script')</script>",
+            },
+          ],
         },
       },
       script: [
