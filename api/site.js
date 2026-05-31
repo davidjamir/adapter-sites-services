@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
     }
 
     if (domain.startsWith("localhost")) {
-      domain = "fanzone.thetimenews.us";
+      domain = "news.thetimenews.co";
       baseUrl = `http://${originDomain}`;
     }
 
