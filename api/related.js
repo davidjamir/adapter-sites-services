@@ -57,7 +57,7 @@ module.exports = async (req, res) => {
         error: "Site not found",
       });
     }
-    const items = await storageIndex.getMany({
+    let items = await storageIndex.getMany({
       filter: {
         domain: siteItem.domain,
         categories: { $in: categories },
