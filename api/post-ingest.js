@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
       mainCategory: newItem.doc.mainCategory,
       author: newItem.doc.author,
       tags: newItem.doc.tags || [],
-      indexDatabaseKey: siteItem.doc.indexDatabaseKey,
+      indexDatabaseKey: siteItem.value.indexDatabaseKey,
     };
 
     const postIndex = await storageIndex.insert({
