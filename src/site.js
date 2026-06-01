@@ -14,6 +14,10 @@ async function update(input) {
   });
 }
 
+async function insertOne(input) {
+  return db.insertOneSite({ payload: input.payload });
+}
+
 async function incItems(input) {
   const filter = { domain: input.domain };
   const payload = { origin: input.origin, domain: input.domain };
@@ -22,6 +26,7 @@ async function incItems(input) {
 
 const site = {
   getOne,
+  insertOne,
   update,
   incItems,
 };

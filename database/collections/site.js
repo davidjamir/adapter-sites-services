@@ -22,7 +22,19 @@ async function updateOneSite({
         updatedAt: new Date(),
       },
       $setOnInsert: {
-        status: "active",
+        name: "",
+        description: "",
+        icon: "",
+        logo: "",
+        theme: "",
+        siteCategory: "",
+        configView: {
+          category: "list",
+          search: "list",
+          tag: "list",
+        },
+        categories: [],
+        pages: [],
         indexDatabaseKey:
           Math.floor(Math.random() * DATABASE_INDEX_SHARD_COUNT) + 1,
         createdAt: new Date(),
@@ -63,9 +75,9 @@ async function incTotalItems({
         theme: "",
         siteCategory: "",
         configView: {
-          category: "",
-          search: "",
-          tag: "",
+          category: "list",
+          search: "list",
+          tag: "list",
         },
         categories: [],
         pages: [],
@@ -81,4 +93,41 @@ async function incTotalItems({
   );
 }
 
-module.exports = { getOneSite, updateOneSite, incTotalItems };
+async function insertOneSite({ collectionName = COLLECTION_NAME, payload }) {
+  const col = await getCollection(collectionName);
+
+  const result = await col.findOneAndUpdate(
+    { domain: payload.domain },
+    {
+      $set: {
+        ...payload,
+        updatedAt: new Date(),
+      },
+      $setOnInsert: {
+        description: "",
+        status: "active",
+        icon: "",
+        logo: "",
+        configView: {
+          category: "list",
+          search: "list",
+          tag: "list",
+        },
+        categories: [],
+        pages: [],
+        indexDatabaseKey:
+          Math.floor(Math.random() * DATABASE_INDEX_SHARD_COUNT) + 1,
+        createdAt: new Date(),
+        totalItems: 0,
+      },
+    },
+    { upsert: true, returnDocument: "after", includeResultMetadata: true },
+  );
+
+  return {
+    doc: result.value,
+    inserted: Boolean(result.lastErrorObject?.upserted),
+  };
+}
+
+module.exports = { getOneSite, updateOneSite, incTotalItems, insertOneSite };
