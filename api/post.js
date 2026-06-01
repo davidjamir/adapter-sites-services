@@ -4,6 +4,7 @@ const { formatPubDate, formatNewYorkDate } = require("../helper/date");
 const storage = require("../src/storage");
 const site = require("../src/site");
 const { redis } = require("../database/redis/index");
+const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
 module.exports = async (req, res) => {
   res.setHeader(
@@ -33,7 +34,7 @@ module.exports = async (req, res) => {
     }
 
     if (domain.startsWith("localhost")) {
-      domain = "news.thetimenews.co";
+      domain = DEFAULT_DOMAIN_DEVELOPER;
     }
 
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
@@ -74,8 +75,9 @@ module.exports = async (req, res) => {
       content: item.content,
     };
 
-    await redis.set(`post:${domain}:${segment}:${slug}`, newItem, 600);
-
+    if (process.env.REQUIRE_REDIS_CACHE === "true") {
+      await redis.set(`post:${domain}:${segment}:${slug}`, newItem, 600);
+    }
     return res.status(200).json({
       ok: true,
       source: "mongo-database",

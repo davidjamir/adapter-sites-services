@@ -4,6 +4,7 @@ const { formatPubDate } = require("../helper/date");
 const storageIndex = require("../src/storage-index");
 const site = require("../src/site");
 const { redis } = require("../database/redis/index");
+const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
 module.exports = async (req, res) => {
   res.setHeader(
@@ -31,8 +32,8 @@ module.exports = async (req, res) => {
       });
     }
 
-    if (domain.startsWith("localhost")) {
-      domain = "news.thetimenews.co";
+     if (domain.startsWith("localhost")) {
+      domain = DEFAULT_DOMAIN_DEVELOPER;
     }
 
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
@@ -77,8 +78,9 @@ module.exports = async (req, res) => {
       tags: item.tags || [],
       createdAt: formatPubDate(item.createdAt),
     }));
-
-    await redis.set(`site:${domain}:${q}`, items, 600);
+    if (process.env.REQUIRE_REDIS_CACHE === "true") {
+      await redis.set(`site:${domain}:${q}`, items, 600);
+    }
     return res.status(200).json({
       ok: true,
       count: items.length,

@@ -5,6 +5,7 @@ const sitemapBuffer = require("../src/sitemap-buffer");
 const sitemap = require("../src/sitemap");
 const { redis } = require("../database/redis/index");
 const { r2 } = require("../database/r2/index");
+const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
 module.exports = async (req, res) => {
   res.setHeader(
@@ -35,7 +36,7 @@ module.exports = async (req, res) => {
     // mode: domain -> lấy danh sách sitemap
     if (domain) {
       if (domain.startsWith("localhost")) {
-        domain = "news.thetimenews.co";
+        domain = DEFAULT_DOMAIN_DEVELOPER;
       }
 
       if (process.env.REQUIRE_REDIS_CACHE === "true") {
@@ -113,7 +114,9 @@ module.exports = async (req, res) => {
             updatedAt: i.updatedAt,
           }));
 
-    await redis.set(`sitemap:${domain}:${id}`, items, 600);
+    if (process.env.REQUIRE_REDIS_CACHE === "true") {
+      await redis.set(`sitemap:${domain}:${id}`, items, 600);
+    }
     return res.status(200).json({
       ok: true,
       source:

@@ -5,6 +5,7 @@ const storageIndex = require("../src/storage-index");
 const site = require("../src/site");
 const origin = require("../src/origin");
 const { redis } = require("../database/redis/index");
+const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
 module.exports = async (req, res) => {
   res.setHeader(
@@ -34,7 +35,7 @@ module.exports = async (req, res) => {
     }
 
     if (domain.startsWith("localhost")) {
-      domain = "www.nflhub.store";
+      domain = DEFAULT_DOMAIN_DEVELOPER;
       baseUrl = `http://${originDomain}`;
     }
 
@@ -84,7 +85,9 @@ module.exports = async (req, res) => {
       },
     };
 
-    await redis.set(`site:${domain}`, item, 600);
+    if (process.env.REQUIRE_REDIS_CACHE === "true") {
+      await redis.set(`site:${domain}`, item, 600);
+    }
     return res.status(200).json({
       ok: true,
       time: new Date().toLocaleString("vi-VN", {
