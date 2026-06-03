@@ -10,15 +10,15 @@ const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 module.exports = async (req, res) => {
   res.setHeader(
     "Cache-Control",
-    "public, max-age=30, s-maxage=300, stale-while-revalidate=600, stale-if-error=86400",
+    "public, max-age=60, s-maxage=120, stale-while-revalidate=60, stale-if-error=86400",
   );
 
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
-  if (!isAuthorized(req)) {
-    return res.status(401).json({ ok: false, error: "Unauthorized" });
-  }
+  // if (!isAuthorized(req)) {
+  //   return res.status(401).json({ ok: false, error: "Unauthorized" });
+  // }
 
   try {
     const query = req.query || {};
