@@ -8,10 +8,10 @@ const { redis } = require("../database/redis/index");
 const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
 module.exports = async (req, res) => {
-  res.setHeader(
-    "Cache-Control",
-    "public, max-age=60, s-maxage=120, stale-while-revalidate=60, stale-if-error=86400",
-  );
+  // res.setHeader(
+  //   "Cache-Control",
+  //   "public, max-age=60, s-maxage=120, stale-while-revalidate=60, stale-if-error=86400",
+  // );
 
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
