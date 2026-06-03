@@ -83,6 +83,11 @@ module.exports = async (req, res) => {
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
       await redis.set(`post:${domain}:${segment}:${slug}`, newItem, 600);
     }
+
+    res.setHeader(
+      "Vercel-Cache-Tag",
+      `${siteItem.domain}, post-${siteItem.domain}, origin-${siteItem.origin}, post-cache`,
+    );
     return res.status(200).json({
       ok: true,
       source: "mongo-database",

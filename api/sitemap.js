@@ -69,6 +69,10 @@ module.exports = async (req, res) => {
 
       await redis.set(`sitemap:${domain}`, items, 600);
 
+      res.setHeader(
+        "Vercel-Cache-Tag",
+        `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-cache`,
+      );
       return res.status(200).json({
         ok: true,
         source: "mongo-database",
@@ -122,6 +126,12 @@ module.exports = async (req, res) => {
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
       await redis.set(`sitemap:${domain}:${id}`, items, 600);
     }
+
+    res.setHeader(
+      "Vercel-Cache-Tag",
+      `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-id-${id}, sitemap-id-cache`,
+    );
+
     return res.status(200).json({
       ok: true,
       source:

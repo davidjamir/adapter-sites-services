@@ -54,11 +54,6 @@ module.exports = async (req, res) => {
 
     const siteItem = await site.getOne({ domain });
     if (!siteItem) {
-      res.setHeader(
-        "Vercel-Cache-Tag",
-        `${siteItem.host}, origin-${siteItem.origin}, feed-${siteItem.host}}`,
-      );
-
       return res.status(404).json({
         ok: false,
         error: "Site not found",
@@ -92,7 +87,7 @@ module.exports = async (req, res) => {
 
     res.setHeader(
       "Vercel-Cache-Tag",
-      `${siteItem.host}, origin-${siteItem.origin}, feed-${siteItem.host}}`,
+      `${siteItem.domain}, feed-${siteItem.domain}, origin-${siteItem.origin}, feed-cache`,
     );
 
     return res.status(200).json({

@@ -84,8 +84,13 @@ module.exports = async (req, res) => {
       createdAt: formatPubDate(item.createdAt),
     }));
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
-      await redis.set(`site:${domain}:${q}`, items, 600);
+      await redis.set(`search:${domain}:${q}`, items, 600);
     }
+
+    res.setHeader(
+      "Vercel-Cache-Tag",
+      `${siteItem.domain}, search-${siteItem.domain}, origin-${siteItem.origin}, search-cache`,
+    );
     return res.status(200).json({
       ok: true,
       count: items.length,

@@ -91,6 +91,11 @@ module.exports = async (req, res) => {
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
       await redis.set(`tag:${domain}:${tag}`, items, 600);
     }
+    res.setHeader(
+      "Vercel-Cache-Tag",
+      `${siteItem.domain}, tag-${siteItem.domain}, origin-${siteItem.origin}, tag-cache`,
+    );
+
     return res.status(200).json({
       ok: true,
       count: items.length,

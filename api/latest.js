@@ -83,6 +83,12 @@ module.exports = async (req, res) => {
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
       await redis.set(`latest:${domain}`, items, 600);
     }
+
+    res.setHeader(
+      "Vercel-Cache-Tag",
+      `${siteItem.domain}, latest-${siteItem.domain}, origin-${siteItem.origin}, latest-cache`,
+    );
+
     return res.status(200).json({
       ok: true,
       count: items.length,
