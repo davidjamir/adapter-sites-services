@@ -6,10 +6,15 @@ const site = require("../src/site");
 const { redis } = require("../database/redis/index");
 const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
+const MAX_AGE = 0;
+const S_MAX_AGE = 60 * 60 * 30; // 30 minutes
+const STALE_WHILE_REVALIDATE = 60 * 60; // 1 hour
+const STALE_IF_ERROR = 60 * 60 * 24 * 7; // 7 days
+
 module.exports = async (req, res) => {
   res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=600, stale-while-revalidate=600, stale-if-error=86400",
+    "Vercel-CDN-Cache-Control",
+    `public, max-age=${MAX_AGE}, s-maxage=${S_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}, stale-if-error=${STALE_IF_ERROR}`,
   );
 
   if (req.method !== "GET") {
@@ -49,6 +54,11 @@ module.exports = async (req, res) => {
 
     const siteItem = await site.getOne({ domain });
     if (!siteItem) {
+      res.setHeader(
+        "Vercel-Cache-Tag",
+        `${siteItem.host}, origin-${siteItem.origin}, feed-${siteItem.host}}`,
+      );
+
       return res.status(404).json({
         ok: false,
         error: "Site not found",
@@ -79,6 +89,11 @@ module.exports = async (req, res) => {
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
       await redis.set(`feed:${domain}`, items, 600);
     }
+
+    res.setHeader(
+      "Vercel-Cache-Tag",
+      `${siteItem.host}, origin-${siteItem.origin}, feed-${siteItem.host}}`,
+    );
 
     return res.status(200).json({
       ok: true,

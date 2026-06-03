@@ -6,11 +6,16 @@ const site = require("../src/site");
 const { redis } = require("../database/redis/index");
 const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
+const MAX_AGE = 0;
+const S_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+const STALE_WHILE_REVALIDATE = 60 * 60; // 1 hour
+const STALE_IF_ERROR = 60 * 60 * 24 * 90; // 90 days
+
 module.exports = async (req, res) => {
-  // res.setHeader(
-  //   "Cache-Control",
-  //   "public, max-age=30, s-maxage=300, stale-while-revalidate=600, stale-if-error=86400",
-  // );
+  res.setHeader(
+    "Vercel-CDN-Cache-Control",
+    `public, max-age=${MAX_AGE}, s-maxage=${S_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}, stale-if-error=${STALE_IF_ERROR}`,
+  );
 
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
