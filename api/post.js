@@ -20,13 +20,13 @@ module.exports = async (req, res) => {
   // }
 
   try {
-    const query = req.query || {};
-    let domain = query.domain;
-    const segment = query.segment;
-    const slug = query.slug;
+    const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
+    let domain = url.searchParams.get("domain");
+    const segment = url.searchParams.get("segment");
+    const slug = url.searchParams.get("slug");
 
     // chỉ cho phép 1 mode
-    if (!domain | !segment | !slug) {
+    if (!domain || !segment || !slug) {
       return res.status(400).json({
         ok: false,
         error: "Require exactly one of: domain, segment, slug",

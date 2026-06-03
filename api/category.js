@@ -20,9 +20,9 @@ module.exports = async (req, res) => {
   // }
 
   try {
-    const query = req.query || {};
-    let domain = query.domain;
-    const category = query.category;
+    const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
+    let domain = url.searchParams.get("domain");
+    const category = url.searchParams.get("category");
 
     // chỉ cho phép 1 mode
     if (!domain | !category) {

@@ -20,8 +20,8 @@ module.exports = async (req, res) => {
   // }
 
   try {
-    const query = req.query || {};
-    let domain = query.domain;
+    const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
+    let domain = url.searchParams.get("domain");
 
     // chỉ cho phép 1 mode
     if (!domain) {
@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
       });
     }
 
-     if (domain.startsWith("localhost")) {
+    if (domain.startsWith("localhost")) {
       domain = DEFAULT_DOMAIN_DEVELOPER;
     }
 

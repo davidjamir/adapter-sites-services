@@ -21,8 +21,8 @@ module.exports = async (req, res) => {
   // }
 
   try {
-    const query = req.query || {};
-    const originDomain = query.domain;
+    const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
+    const originDomain = url.searchParams.get("domain");
     let domain = originDomain;
     let baseUrl = "";
 

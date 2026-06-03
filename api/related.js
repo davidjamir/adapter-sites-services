@@ -22,10 +22,12 @@ module.exports = async (req, res) => {
   // }
 
   try {
-    const query = req.query || {};
-    let domain = query.domain;
-    const categories = query.categories ? query.categories.split(",") : [];
-    const slug = query.slug;
+    const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
+    let domain = url.searchParams.get("domain");
+    const slug = url.searchParams.get("slug");
+    const categories = url.searchParams.get("categories")
+      ? url.searchParams.get("categories").split(",")
+      : [];
 
     // chỉ cho phép 1 mode
     if (!domain || !slug) {

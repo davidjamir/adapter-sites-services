@@ -21,9 +21,9 @@ module.exports = async (req, res) => {
   // }
 
   try {
-    const query = req.query || {};
-    let domain = query.domain;
-    const id = query.id;
+    const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
+    let domain = url.searchParams.get("domain");
+    const id = url.searchParams.get("id");
 
     // chỉ cho phép 1 mode
     if ((!domain && !id) || (domain && id)) {
