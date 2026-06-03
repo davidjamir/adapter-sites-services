@@ -8,7 +8,7 @@ const { r2 } = require("../database/r2/index");
 const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
 const MAX_AGE = 0;
-const S_MAX_AGE = 60 * 60 * 24 * 2; // 2 days
+const S_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 const STALE_WHILE_REVALIDATE = 60 * 60; // 1 hour
 const STALE_IF_ERROR = 60 * 60 * 24 * 7; // 7 days
 

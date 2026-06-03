@@ -9,7 +9,7 @@ const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 const MAX_RELATED_POSTS = 3;
 
 const MAX_AGE = 0;
-const S_MAX_AGE = 60 * 60 * 24 * 3; // 3 days
+const S_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 const STALE_WHILE_REVALIDATE = 60 * 60; // 1 hour
 const STALE_IF_ERROR = 60 * 60 * 24 * 30; // 30 days
 
