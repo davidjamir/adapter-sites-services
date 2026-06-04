@@ -93,10 +93,7 @@ module.exports = async (req, res) => {
       },
     });
 
-    const r2feed = await updateFeed(
-      newItem.doc.domain,
-      siteItem.value.indexDatabaseKey,
-    );
+    const r2feed = await updateFeed(newItem.doc.domain);
 
     console.log({
       title: newItem.doc.title,

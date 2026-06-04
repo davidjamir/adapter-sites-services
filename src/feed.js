@@ -1,13 +1,44 @@
 const storageIndex = require("./storage-index");
+const site = require("./site");
+const origin = require("./origin");
+
 const { formatPubDate } = require("../helper/date");
 
 const { DEFAULT_NUMBER_ITEMS_FEED } = require("../constants");
 
-async function genFeed(domain, indexDatabaseKey) {
+async function genFeed(domain) {
+  const siteItem = await site.getOne({ domain });
+  const originItem = await origin.getOne({ origin: siteItem.origin });
+
+  const siteRes = {
+    id: siteItem._id,
+    host: siteItem.domain,
+    baseUrl: `https://${siteItem.domain}`,
+    origin: siteItem.origin,
+    name: siteItem.name,
+    icon: siteItem.icon || originItem.icon,
+    logo: siteItem.icon || originItem.icon,
+    theme: siteItem.theme || "news",
+    siteCategory: siteItem.siteCategory,
+    configView: siteItem.configView,
+    ads: originItem.ads,
+    script: originItem.script || [],
+    categories: siteItem.categories?.length
+      ? siteItem.categories
+      : originItem.categories,
+    pages: siteItem.pages?.length ? siteItem.pages : originItem.pages,
+    verification: originItem.verification,
+    seo: {
+      title: siteItem.name || originItem.seo?.title,
+      description: siteItem.description || originItem.seo?.description,
+      canonicalUrl: `https://${siteItem.domain}`,
+    },
+  };
+
   const posts = (
     await storageIndex.getMany({
       filter: { domain: domain },
-      indexDatabaseKey: indexDatabaseKey,
+      indexDatabaseKey: siteItem.indexDatabaseKey,
       sort: { createdAt: -1 },
       limit: DEFAULT_NUMBER_ITEMS_FEED,
     })
@@ -35,20 +66,20 @@ async function genFeed(domain, indexDatabaseKey) {
         xmlns:flatplan="https://www.wearemathematics.co.uk/flatplan-feedspec/">
       <channel>
         <atom:link
-          href="${siteUrl}/feed"
+          href="${siteRes.baseUrl}/feed"
           rel="self"
           type="application/rss+xml"
         />
-        <description>${site.seo.description}</description>
-        <title>${site.seo.title}</title>
-        <link>${site.seo.canonicalUrl}</link>
+        <description>${siteRes.seo.description}</description>
+        <title>${siteRes.seo.title}</title>
+        <link>${siteRes.seo.canonicalUrl}</link>
 
         ${posts
           .map(
             (post) => `
           <item>
             <title><![CDATA[${post.title}]]></title>
-            <link>https://${domain}/post/${post.segment}/${post.slug}</link>
+            <link>${siteRes.baseUrl}/post/${post.segment}/${post.slug}</link>
             <description><![CDATA[${post.snippet}]]></description>
             <pubDate>${post.createdAt}</pubDate>
             <author>${post.author}</author>
@@ -67,8 +98,8 @@ async function genFeed(domain, indexDatabaseKey) {
   `;
 }
 
-export async function updateFeed(domain, indexDatabaseKey) {
-  const xmlBody = await genFeed(domain, indexDatabaseKey);
+export async function updateFeed(domain) {
+  const xmlBody = await genFeed(domain);
   const res = await fetch(
     `${process.env.ENDPOINT_STORAGE_R2_FEED}/${domain}/feed.xml`,
     {
