@@ -11,8 +11,6 @@ const S_MAX_AGE = 60 * 60 * 30; // 30 minutes
 const STALE_WHILE_REVALIDATE = 60 * 60; // 1 hour
 const STALE_IF_ERROR = 60 * 60 * 24 * 7; // 7 days
 
-const { updateFeed } = require("../src/feed");
-
 module.exports = async (req, res) => {
   res.setHeader(
     "Cache-Control",
@@ -41,8 +39,6 @@ module.exports = async (req, res) => {
     if (domain.startsWith("localhost")) {
       domain = DEFAULT_DOMAIN_DEVELOPER;
     }
-
-    await updateFeed(domain);
 
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
       const siteCache = await redis.get(`feed:${domain}`);

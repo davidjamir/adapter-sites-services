@@ -65,44 +65,26 @@ async function genFeed(domain) {
   }));
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-    <rss version="2.0"
-        xmlns:atom="http://www.w3.org/2005/Atom"
-        xmlns:media="http://search.yahoo.com/mrss/"
-        xmlns:content="http://purl.org/rss/1.0/modules/content/"
-        xmlns:mi="http://schemas.ingestion.microsoft.com/common/"
-        xmlns:flatplan="https://www.wearemathematics.co.uk/flatplan-feedspec/">
-      <channel>
-        <atom:link
-          href="${siteRes.baseUrl}/feed"
-          rel="self"
-          type="application/rss+xml"
-        />
-        <description>${siteRes.seo.description}</description>
-        <title>${siteRes.seo.title}</title>
-        <link>${siteRes.seo.canonicalUrl}</link>
-
-        ${posts
-          .map(
-            (post) => `
-          <item>
-            <title><![CDATA[${post.title ?? ""}]]></title>
-            <link><![CDATA[${siteRes.baseUrl}/post/${post.segment}/${post.slug}]]></link>
-            <description><![CDATA[${post.snippet ?? ""}]]></description>
-            <pubDate><![CDATA[${post.createdAt ?? ""}]]></pubDate>
-            <author><![CDATA[${post.author ?? ""}]]></author>
-            <guid isPermaLink="false"><![CDATA[${post.id ?? ""}]]></guid>
-            <language><![CDATA[en]]></language>
-            <media:thumbnail url="${post.featuredImage}" caption="${attr(post.title)}"/>
-            <flatplan:sponsor/>
-            <flatplan:author name="${post.author}"/>
-          </item>
-        `,
-          )
-          .join("")}
-
-      </channel>
-    </rss>
-  `;
+    <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:mi="http://schemas.ingestion.microsoft.com/common/" xmlns:flatplan="https://www.wearemathematics.co.uk/flatplan-feedspec/">
+        <channel>
+            <atom:link href="${siteRes.baseUrl}/feed" rel="self" type="application/rss+xml" />
+            <description>${siteRes.seo.description}</description>
+            <title>${siteRes.seo.title}</title>
+            <link>${siteRes.seo.canonicalUrl}</link>
+            ${posts.map((post) => `<item>
+                <title><![CDATA[${post.title ?? ""}]]></title>
+                <link>${siteRes.baseUrl}/post/${post.segment}/${post.slug}</link>
+                <description><![CDATA[${post.snippet ?? ""}]]></description>
+                <pubDate>${post.createdAt ?? ""}</pubDate>
+                <author>${post.author ?? ""}</author>
+                <guid isPermaLink="false">${post.id ?? ""}</guid>
+                <language>en</language>
+                <media:thumbnail url="${post.featuredImage}" caption="${attr(post.title)}"/>
+                <flatplan:sponsor/>
+                <flatplan:author name="${post.author}"/>
+            </item>`,).join("")}
+        </channel>
+    </rss>`;
 }
 
 export async function updateFeed(domain) {
