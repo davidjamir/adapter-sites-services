@@ -1,4 +1,6 @@
 const storageIndex = require("./storage-index");
+const { formatPubDate } = require("../helper/date");
+
 const { DEFAULT_NUMBER_ITEMS_FEED } = require("../constants");
 
 async function genFeed(domain, indexDatabaseKey) {
