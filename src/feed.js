@@ -67,14 +67,17 @@ async function genFeed(domain, indexDatabaseKey) {
 
 export async function updateFeed(domain, indexDatabaseKey) {
   const xmlBody = await genFeed(domain, indexDatabaseKey);
-  const res = await fetch("https://your-worker-url/upload", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/xml",
-      Authorization: `Bearer ${process.env.SECRET_STORAGE_R2_FEED}`,
+  const res = await fetch(
+    `${process.env.ENDPOINT_STORAGE_R2_FEED}/${domain}/feed.xml`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/xml",
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_R2_FEED}`,
+      },
+      body: xmlBody,
     },
-    body: xmlBody,
-  });
+  );
 
   return res.json();
 }
