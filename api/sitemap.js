@@ -14,7 +14,7 @@ const STALE_IF_ERROR = 60 * 60 * 24 * 7; // 7 days
 
 module.exports = async (req, res) => {
   res.setHeader(
-    "Vercel-CDN-Cache-Control",
+    "Cache-Control",
     `public, max-age=${MAX_AGE}, s-maxage=${S_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}, stale-if-error=${STALE_IF_ERROR}`,
   );
 
@@ -70,7 +70,7 @@ module.exports = async (req, res) => {
       await redis.set(`sitemap:${domain}`, items, 600);
 
       res.setHeader(
-        "Vercel-Cache-Tag",
+        "Cache-Tag",
         `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-cache`,
       );
       return res.status(200).json({
@@ -128,7 +128,7 @@ module.exports = async (req, res) => {
     }
 
     res.setHeader(
-      "Vercel-Cache-Tag",
+      "Cache-Tag",
       `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-id-${id}, sitemap-id-cache`,
     );
 

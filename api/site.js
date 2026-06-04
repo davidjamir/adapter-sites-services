@@ -14,7 +14,7 @@ const STALE_IF_ERROR = 60 * 60 * 24 * 300; // 300 days
 
 module.exports = async (req, res) => {
   res.setHeader(
-    "Vercel-CDN-Cache-Control",
+    "Cache-Control",
     `public, max-age=${MAX_AGE}, s-maxage=${S_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}, stale-if-error=${STALE_IF_ERROR}`,
   );
 
@@ -94,7 +94,7 @@ module.exports = async (req, res) => {
       await redis.set(`site:${domain}`, item, 600);
     }
     res.setHeader(
-      "Vercel-Cache-Tag",
+      "Cache-Tag",
       `${item.host}, site-${item.host}, origin-${item.origin}, site-cache`,
     );
 
