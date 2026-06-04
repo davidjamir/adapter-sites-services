@@ -8,6 +8,7 @@ const origin = require("../src/origin");
 const site = require("../src/site");
 const storageIndex = require("../src/storage-index");
 const sitemapBuffer = require("../src/sitemap-buffer");
+const { updateFeed } = require("../src/feed");
 
 export function randomInt(min = 0, max = 100) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -92,11 +93,17 @@ module.exports = async (req, res) => {
       },
     });
 
+    const r2feed = await updateFeed(
+      newItem.doc.domain,
+      siteItem.value.indexDatabaseKey,
+    );
+
     console.log({
       title: newItem.doc.title,
       domain: newItem.doc.domain,
       segment: newItem.doc.segment,
       categories: newItem.doc.categories,
+      r2feed,
     });
     return res.status(200).json({
       ok: true,
