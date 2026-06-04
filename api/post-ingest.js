@@ -8,7 +8,7 @@ const origin = require("../src/origin");
 const site = require("../src/site");
 const storageIndex = require("../src/storage-index");
 const sitemapBuffer = require("../src/sitemap-buffer");
-const { updateFeed } = require("../src/feed");
+const { updateFeed, updateLatest } = require("../src/r2upload");
 
 export function randomInt(min = 0, max = 100) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -94,6 +94,7 @@ module.exports = async (req, res) => {
     });
 
     const r2feed = await updateFeed(newItem.doc.domain);
+    const r2latest = await updateLatest(newItem.doc.domain);
 
     console.log({
       title: newItem.doc.title,
@@ -101,6 +102,7 @@ module.exports = async (req, res) => {
       segment: newItem.doc.segment,
       categories: newItem.doc.categories,
       r2feed,
+      r2latest,
     });
     return res.status(200).json({
       ok: true,

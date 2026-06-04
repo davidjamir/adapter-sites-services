@@ -13,6 +13,30 @@ const attr = (s = "") =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
+async function getLatestPosts(domain, indexDatabaseKey, limit) {
+  return (
+    await storageIndex.getMany({
+      filter: { domain: domain },
+      indexDatabaseKey: indexDatabaseKey,
+      sort: { createdAt: -1 },
+      limit: limit,
+    })
+  ).map((item) => ({
+    id: item._id,
+    title: item.title,
+    slug: item.slug,
+    domain: item.domain,
+    featuredImage: item.featuredImage,
+    snippet: item.snippet,
+    mainCategory: item.mainCategory,
+    categories: item.categories,
+    segment: item.segment,
+    author: item.author,
+    tags: item.tags || [],
+    createdAt: formatPubDate(item.createdAt),
+  }));
+}
+
 async function genFeed(domain) {
   const siteItem = await site.getOne({ domain });
   const originItem = await origin.getOne({ origin: siteItem.origin });
@@ -42,27 +66,11 @@ async function genFeed(domain) {
     },
   };
 
-  const posts = (
-    await storageIndex.getMany({
-      filter: { domain: domain },
-      indexDatabaseKey: siteItem.indexDatabaseKey,
-      sort: { createdAt: -1 },
-      limit: DEFAULT_NUMBER_ITEMS_FEED,
-    })
-  ).map((item) => ({
-    id: item._id,
-    title: item.title,
-    slug: item.slug,
-    domain: item.domain,
-    featuredImage: item.featuredImage,
-    snippet: item.snippet,
-    mainCategory: item.mainCategory,
-    categories: item.categories,
-    segment: item.segment,
-    author: item.author,
-    tags: item.tags || [],
-    createdAt: formatPubDate(item.createdAt),
-  }));
+  const posts = await getLatestPosts(
+    domain,
+    siteItem.indexDatabaseKey,
+    DEFAULT_NUMBER_ITEMS_FEED,
+  );
 
   return `<?xml version="1.0" encoding="UTF-8"?>
     <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:mi="http://schemas.ingestion.microsoft.com/common/" xmlns:flatplan="https://www.wearemathematics.co.uk/flatplan-feedspec/">
@@ -71,7 +79,9 @@ async function genFeed(domain) {
             <description>${siteRes.seo.description}</description>
             <title>${siteRes.seo.title}</title>
             <link>${siteRes.seo.canonicalUrl}</link>
-            ${posts.map((post) => `<item>
+            ${posts
+              .map(
+                (post) => `<item>
                 <title><![CDATA[${post.title ?? ""}]]></title>
                 <link>${siteRes.baseUrl}/post/${post.segment}/${post.slug}</link>
                 <description><![CDATA[${post.snippet ?? ""}]]></description>
@@ -82,7 +92,9 @@ async function genFeed(domain) {
                 <media:thumbnail url="${post.featuredImage}" caption="${attr(post.title)}"/>
                 <flatplan:sponsor/>
                 <flatplan:author name="${post.author}"/>
-            </item>`,).join("")}
+            </item>`,
+              )
+              .join("")}
         </channel>
     </rss>`;
 }
@@ -98,6 +110,35 @@ export async function updateFeed(domain) {
         Authorization: `Bearer ${process.env.SECRET_STORAGE_R2_FEED}`,
       },
       body: xmlBody,
+    },
+  );
+
+  return res.json();
+}
+
+export async function updateLatest(domain) {
+  const siteItem = await site.getOne({ domain });
+  const posts = await getLatestPosts(
+    domain,
+    siteItem.indexDatabaseKey,
+    DEFAULT_NUMBER_ITEMS_FEED,
+  );
+
+  const payload = {
+    ok: true,
+    count: posts.length,
+    items: posts,
+  };
+
+  const res = await fetch(
+    `${process.env.ENDPOINT_STORAGE_R2_FEED}/${domain}/latest.json`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_R2_FEED}`,
+      },
+      body: JSON.stringify(payload),
     },
   );
 
