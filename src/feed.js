@@ -48,7 +48,7 @@ async function genFeed(domain, indexDatabaseKey) {
             (post) => `
           <item>
             <title><![CDATA[${post.title}]]></title>
-            <link>${siteUrl}/post/${post.segment}/${post.slug}</link>
+            <link>https://${domain}/post/${post.segment}/${post.slug}</link>
             <description><![CDATA[${post.snippet}]]></description>
             <pubDate>${post.createdAt}</pubDate>
             <author>${post.author}</author>
