@@ -6,6 +6,13 @@ const { formatPubDate } = require("../helper/date");
 
 const { DEFAULT_NUMBER_ITEMS_FEED } = require("../constants");
 
+const attr = (s = "") =>
+  String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
 async function genFeed(domain) {
   const siteItem = await site.getOne({ domain });
   const originItem = await origin.getOne({ origin: siteItem.origin });
@@ -58,6 +65,7 @@ async function genFeed(domain) {
   }));
 
   return `
+  <?xml version="1.0" encoding="UTF-8"?>
     <rss version="2.0"
         xmlns:atom="http://www.w3.org/2005/Atom"
         xmlns:media="http://search.yahoo.com/mrss/"
@@ -78,14 +86,14 @@ async function genFeed(domain) {
           .map(
             (post) => `
           <item>
-            <title><![CDATA[${post.title}]]></title>
-            <link>${siteRes.baseUrl}/post/${post.segment}/${post.slug}</link>
-            <description><![CDATA[${post.snippet}]]></description>
-            <pubDate>${post.createdAt}</pubDate>
-            <author>${post.author}</author>
-            <guid isPermaLink="false">${post.id}</guid>
-            <language>en</language>
-            <media:thumbnail url="${post.featuredImage}" caption="${post.title}"/>
+            <title><![CDATA[${post.title ?? ""}]]></title>
+            <link><![CDATA[${siteRes.baseUrl}/post/${post.segment}/${post.slug}]]></link>
+            <description><![CDATA[${post.snippet ?? ""}]]></description>
+            <pubDate><![CDATA[${post.createdAt ?? ""}]]></pubDate>
+            <author><![CDATA[${post.author ?? ""}]]></author>
+            <guid isPermaLink="false"><![CDATA[${post.id ?? ""}]]></guid>
+            <language><![CDATA[en]]></language>
+            <media:thumbnail url="${post.featuredImage}" caption="${attr(post.title)}"/>
             <flatplan:sponsor/>
             <flatplan:author name="${post.author}"/>
           </item>
