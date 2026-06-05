@@ -73,6 +73,10 @@ module.exports = async (req, res) => {
         "Cache-Tag",
         `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-cache`,
       );
+      res.setHeader(
+        "Vercel-Cache-Tag",
+        `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-cache`,
+      );
       return res.status(200).json({
         ok: true,
         source: "mongo-database",
@@ -129,6 +133,10 @@ module.exports = async (req, res) => {
 
     res.setHeader(
       "Cache-Tag",
+      `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-id-${id}, sitemap-id-cache`,
+    );
+    res.setHeader(
+      "Vercel-Cache-Tag",
       `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-id-${id}, sitemap-id-cache`,
     );
 

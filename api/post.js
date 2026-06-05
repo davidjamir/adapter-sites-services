@@ -88,6 +88,10 @@ module.exports = async (req, res) => {
       "Cache-Tag",
       `${siteItem.domain}, post-${siteItem.domain}, origin-${siteItem.origin}, post-cache`,
     );
+    res.setHeader(
+      "Vercel-Cache-Tag",
+      `${siteItem.domain}, post-${siteItem.domain}, origin-${siteItem.origin}, post-cache`,
+    );
     return res.status(200).json({
       ok: true,
       source: "mongo-database",

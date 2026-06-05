@@ -89,6 +89,10 @@ module.exports = async (req, res) => {
       "Cache-Tag",
       `${siteItem.domain}, feed-${siteItem.domain}, origin-${siteItem.origin}, feed-cache`,
     );
+    res.setHeader(
+      "Vercel-Cache-Tag",
+      `${siteItem.domain}, feed-${siteItem.domain}, origin-${siteItem.origin}, feed-cache`,
+    );
 
     return res.status(200).json({
       ok: true,
