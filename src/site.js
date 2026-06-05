@@ -5,6 +5,11 @@ async function getOne(input) {
   return db.getOneSite({ filter });
 }
 
+async function getMany(input) {
+  const filter = { origin: input.origin };
+  return db.getManySite({ filter });
+}
+
 async function update(input) {
   const filter = { domain: input.domain };
 
@@ -29,6 +34,7 @@ const site = {
   insertOne,
   update,
   incItems,
+  getMany,
 };
 
 module.exports = site;

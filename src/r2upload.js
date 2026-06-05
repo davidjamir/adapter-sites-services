@@ -102,12 +102,12 @@ async function genFeed(domain) {
 export async function updateFeed(domain) {
   const xmlBody = await genFeed(domain);
   const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_R2_FEED}/${domain}/feed.xml`,
+    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/feed.xml`,
     {
       method: "PUT",
       headers: {
         "Content-Type": "application/xml",
-        Authorization: `Bearer ${process.env.SECRET_STORAGE_R2_FEED}`,
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
       },
       body: xmlBody,
     },
@@ -131,12 +131,44 @@ export async function updateLatest(domain) {
   };
 
   const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_R2_FEED}/${domain}/latest.json`,
+    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/latest.json`,
     {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.SECRET_STORAGE_R2_FEED}`,
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  return res.json();
+}
+
+export async function updateAdsTxt(domain, payload) {
+  const res = await fetch(
+    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/ads.txt`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "text/plain",
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
+      },
+      body: payload,
+    },
+  );
+
+  return res.json();
+}
+
+export async function updateSite(domain, payload) {
+  const res = await fetch(
+    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/site.json`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
       },
       body: JSON.stringify(payload),
     },

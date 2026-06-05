@@ -7,6 +7,11 @@ async function getOneSite({ collectionName = COLLECTION_NAME, filter }) {
   return await col.findOne(filter);
 }
 
+async function getManySite({ collectionName = COLLECTION_NAME, filter }) {
+  const col = await getCollection(collectionName);
+  return col.find(filter).sort({ createdAt: 1 }).toArray();
+}
+
 async function updateOneSite({
   collectionName = COLLECTION_NAME,
   filter,
@@ -130,4 +135,10 @@ async function insertOneSite({ collectionName = COLLECTION_NAME, payload }) {
   };
 }
 
-module.exports = { getOneSite, updateOneSite, incTotalItems, insertOneSite };
+module.exports = {
+  getOneSite,
+  getManySite,
+  updateOneSite,
+  incTotalItems,
+  insertOneSite,
+};
