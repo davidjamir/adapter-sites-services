@@ -161,6 +161,22 @@ export async function updateAdsTxt(domain, payload) {
   return res.json();
 }
 
+export async function updateRobotsTxt(domain, payload) {
+  const res = await fetch(
+    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/robots.txt`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "text/plain",
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
+      },
+      body: payload,
+    },
+  );
+
+  return res.json();
+}
+
 export async function updateSite(domain, payload) {
   const res = await fetch(
     `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/site.json`,

@@ -7,7 +7,11 @@ const origin = require("../src/origin");
 const { redis } = require("../database/redis/index");
 const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
-const { updateAdsTxt, updateSite } = require("../src/r2upload");
+const {
+  updateAdsTxt,
+  updateSite,
+  updateRobotsTxt,
+} = require("../src/r2upload");
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {
@@ -66,8 +70,10 @@ module.exports = async (req, res) => {
           canonicalUrl: `https://${siteItem.domain}`,
         },
       };
-      await updateSite(siteItem.domain, payload);
-      await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
+      const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
+      // await updateSite(siteItem.domain, payload);
+      // await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
+      await updateRobotsTxt(siteItem.domain, robotsTxt);
       items.push(payload);
     }
 
