@@ -128,16 +128,16 @@ module.exports = async (req, res) => {
           }));
 
     if (process.env.REQUIRE_REDIS_CACHE === "true") {
-      await redis.set(`sitemap:${domain}:${id}`, items, 600);
+      await redis.set(`sitemap:${sitemapItem.domain}:${id}`, items, 600);
     }
 
     res.setHeader(
       "Cache-Tag",
-      `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-id-${id}, sitemap-id-cache`,
+      `${sitemapItem.domain}, sitemap-${sitemapItem.domain}, origin-${sitemapItem.domain.split(".")[0]}, sitemap-id-${id}, sitemap-id-cache`,
     );
     res.setHeader(
       "Vercel-Cache-Tag",
-      `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-id-${id}, sitemap-id-cache`,
+      `${sitemapItem.domain}, sitemap-${sitemapItem.domain}, origin-${sitemapItem.domain.split(".")[0]}, sitemap-id-${id}, sitemap-id-cache`,
     );
 
     return res.status(200).json({
@@ -147,6 +147,7 @@ module.exports = async (req, res) => {
           ? "r2-database"
           : "mongo-database",
       sitemapId: sitemapItem.sitemapId,
+      counts: items.length,
       items: items,
     });
   } catch (err) {
