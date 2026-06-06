@@ -1,6 +1,7 @@
 const db = require("../database/collections/sitemap-buffer");
 const sitemap = require("./sitemap");
 const { MAX_DEFAULT_ITEMS_EACH_SITEMAP } = require("../constants");
+const { updateSitemapGeneral, updateSitemapItem } = require("../src/r2upload");
 
 async function insert(input) {
   const payload = input.payload;
@@ -21,6 +22,9 @@ async function insert(input) {
         domain: payload.domain,
       },
     });
+
+    // Update sitemap.xml when insert new a sitemap-post
+    await updateSitemapGeneral(payload.domain);
   }
 
   const result = await db.insertOneItem({
@@ -35,6 +39,9 @@ async function insert(input) {
     domain: result.domain,
     sitemapId: sitemapItem.sitemapId,
   });
+
+  await updateSitemapItem(payload.domain, sitemapItem.sitemapId);
+
   return result;
 }
 

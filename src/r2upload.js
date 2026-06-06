@@ -2,6 +2,7 @@ const storageIndex = require("./storage-index");
 const site = require("./site");
 const origin = require("./origin");
 const sitemap = require("./sitemap");
+const sitemapBuffer = require("./sitemap-buffer");
 
 const { formatPubDate } = require("../helper/date");
 
@@ -13,6 +14,22 @@ const attr = (s = "") =>
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+
+async function uploadR2General(domain, contentType, key, payload) {
+  const res = await fetch(
+    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/${key}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": contentType,
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
+      },
+      body: payload,
+    },
+  );
+
+  return res.json();
+}
 
 async function getLatestPosts(domain, indexDatabaseKey, limit) {
   return (
@@ -102,19 +119,7 @@ async function genFeed(domain) {
 
 export async function updateFeed(domain) {
   const xmlBody = await genFeed(domain);
-  const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/feed.xml`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/xml",
-        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
-      },
-      body: xmlBody,
-    },
-  );
-
-  return res.json();
+  return await uploadR2General(domain, "application/xml", "feed.xml", xmlBody);
 }
 
 export async function updateLatest(domain) {
@@ -131,124 +136,105 @@ export async function updateLatest(domain) {
     items: posts,
   };
 
-  const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/latest.json`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
-      },
-      body: JSON.stringify(payload),
-    },
+  return await uploadR2General(
+    domain,
+    "application/json",
+    "latest.json",
+    JSON.stringify(payload),
   );
-
-  return res.json();
 }
 
 export async function updateAdsTxt(domain, payload) {
-  const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/ads.txt`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "text/plain",
-        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
-      },
-      body: payload,
-    },
-  );
-
-  return res.json();
+  return await uploadR2General(domain, "text/plain", "ads.txt", payload);
 }
 
 export async function updateRobotsTxt(domain, payload) {
-  const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/robots.txt`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "text/plain",
-        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
-      },
-      body: payload,
-    },
-  );
-
-  return res.json();
+  return await uploadR2General(domain, "text/plain", "robots.txt", payload);
 }
 
 export async function updateSite(domain, payload) {
-  const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/site.json`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
-      },
-      body: JSON.stringify(payload),
-    },
+  return await uploadR2General(
+    domain,
+    "application/json",
+    "site.json",
+    JSON.stringify(payload),
   );
-
-  return res.json();
 }
 
-function genSitemapGeneral(domain) {
-  const sitemapItems = (
-    await sitemap.getMany({
-      filter: { domain },
-    })
-  ).map((i) => ({
-    sitemapId: i.sitemapId,
-    domain: i.domain,
-    status: i.status,
-    createdAt: i.createdAt,
-    updatedAt: i.updatedAt,
-  }));
+async function genSitemapGeneral(domain) {
+  const sitemapItems = await sitemap.getMany({
+    filter: { domain },
+  });
 
-  return `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-    <loc>https://${item.domain}</loc>
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://${domain}</loc>
     <lastmod>2026-06-06T07:43:00.237Z</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1</priority>
-    </url>
-    <url>
-    <loc>https://${item.domain}/sitemap-page.xml</loc>
+  </url>
+  <url>
+    <loc>https://${domain}/sitemap-page.xml</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    </url>
-    <url>
-    <loc>https://${item.domain}/sitemap-category.xml</loc>
+  </url>
+  <url>
+    <loc>https://${domain}/sitemap-category.xml</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    </url>
-    ${ sitemapItems.map(item => {`<url>
-      <loc>https://${item.domain}/sitemap-post/${item.sitemapId}.xml</loc>
-      <lastmod>${new Date(item.updatedAt)}</lastmod>
-      <changefreq>daily</changefreq>
-      <priority>0.8</priority>
-    </url>`})
-    }
-</urlset>`
+  </url>
+  ${sitemapItems
+    .map(
+      (item) => `<url>
+    <loc>https://${item.domain}/sitemap-posts-${item.sitemapId}.xml</loc>
+    <lastmod>${new Date(item.updatedAt)}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`,
+    )
+    .join("")}
+</urlset>`;
 }
 
 export async function updateSitemapGeneral(domain) {
+  const xmlSitemap = await genSitemapGeneral(domain);
 
-  const xmlSitemap = genSitemapGeneral(domain)
-
-  const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/sitemap.xml`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/xml",
-        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
-      },
-      body: xmlSitemap,
-    },
+  return await uploadR2General(
+    domain,
+    "application/xml",
+    "sitemap.xml",
+    xmlSitemap,
   );
+}
 
-  return res.json();
+async function genSitemapItem(id) {
+  const sitemapItems = await sitemapBuffer.getMany({
+    filter: {
+      sitemapId: id,
+    },
+  });
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${sitemapItems
+    .map(
+      (item) => `<url>
+    <loc>${item.url}</loc>
+    <lastmod>${new Date(item.updatedAt)}</lastmod>
+  </url>`,
+    )
+    .join("")}
+</urlset>`;
+}
+
+export async function updateSitemapItem(domain, id) {
+  const xmlSitemapItem = await genSitemapItem(id);
+
+  return await uploadR2General(
+    domain,
+    "application/xml",
+    `sitemap-post/${id}.xml`,
+    xmlSitemapItem,
+  );
 }
