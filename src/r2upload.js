@@ -1,6 +1,7 @@
 const storageIndex = require("./storage-index");
 const site = require("./site");
 const origin = require("./origin");
+const sitemap = require("./sitemap");
 
 const { formatPubDate } = require("../helper/date");
 
@@ -187,6 +188,65 @@ export async function updateSite(domain, payload) {
         Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
       },
       body: JSON.stringify(payload),
+    },
+  );
+
+  return res.json();
+}
+
+function genSitemapGeneral(domain) {
+  const sitemapItems = (
+    await sitemap.getMany({
+      filter: { domain },
+    })
+  ).map((i) => ({
+    sitemapId: i.sitemapId,
+    domain: i.domain,
+    status: i.status,
+    createdAt: i.createdAt,
+    updatedAt: i.updatedAt,
+  }));
+
+  return `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+    <loc>https://${item.domain}</loc>
+    <lastmod>2026-06-06T07:43:00.237Z</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1</priority>
+    </url>
+    <url>
+    <loc>https://${item.domain}/sitemap-page.xml</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    </url>
+    <url>
+    <loc>https://${item.domain}/sitemap-category.xml</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    </url>
+    ${ sitemapItems.map(item => {`<url>
+      <loc>https://${item.domain}/sitemap-post/${item.sitemapId}.xml</loc>
+      <lastmod>${new Date(item.updatedAt)}</lastmod>
+      <changefreq>daily</changefreq>
+      <priority>0.8</priority>
+    </url>`})
+    }
+</urlset>`
+}
+
+export async function updateSitemapGeneral(domain) {
+
+  const xmlSitemap = genSitemapGeneral(domain)
+
+  const res = await fetch(
+    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/sitemap.xml`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/xml",
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
+      },
+      body: xmlSitemap,
     },
   );
 

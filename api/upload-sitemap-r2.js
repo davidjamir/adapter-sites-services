@@ -17,8 +17,6 @@ module.exports = async (req, res) => {
     return res.status(401).json({ ok: false, error: "Unauthorized" });
   }
 
-  console.log("Cron Job Adapter Server Saved Into R2 ", new Date());
-
   try {
     const sitemaps = await sitemap.getMany({
       filter: {

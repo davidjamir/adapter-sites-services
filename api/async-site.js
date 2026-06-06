@@ -24,6 +24,7 @@ module.exports = async (req, res) => {
   try {
     const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
     const originValue = url.searchParams.get("origin");
+    const option = url.searchParams.get("option");
 
     if (!originValue) {
       return res.status(400).json({
@@ -71,9 +72,12 @@ module.exports = async (req, res) => {
         },
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
-      // await updateSite(siteItem.domain, payload);
-      // await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
-      await updateRobotsTxt(siteItem.domain, robotsTxt);
+      if (option === "robots") {
+        await updateRobotsTxt(siteItem.domain, robotsTxt);
+      } else {
+        await updateSite(siteItem.domain, payload);
+        await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
+      }
       items.push(payload);
     }
 
