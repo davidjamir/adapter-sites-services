@@ -1,7 +1,7 @@
 const db = require("../database/collections/sitemap-buffer");
 const sitemap = require("./sitemap");
 const { MAX_DEFAULT_ITEMS_EACH_SITEMAP } = require("../constants");
-const { updateSitemapGeneral, updateSitemapItem } = require("../src/r2upload");
+const { updateSitemapGeneral, updateSitemapItem } = require("./r2upload");
 
 async function insert(input) {
   const payload = input.payload;

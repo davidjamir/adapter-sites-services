@@ -13,7 +13,8 @@ const attr = (s = "") =>
     .replace(/&/g, "&amp;")
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(/>/g, "&gt;")
+    .replace(/'/g, "&apos;");
 
 async function uploadR2General(domain, contentType, key, payload) {
   const res = await fetch(
@@ -187,7 +188,7 @@ async function genSitemapGeneral(domain) {
   ${sitemapItems
     .map(
       (item) => `<url>
-    <loc>https://${item.domain}/sitemap-posts-${item.sitemapId}.xml</loc>
+    <loc>https://${item.domain}/sitemap-post/${item.sitemapId}.xml</loc>
     <lastmod>${new Date(item.updatedAt)}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
@@ -208,7 +209,7 @@ export async function updateSitemapGeneral(domain) {
   );
 }
 
-async function genSitemapItem(id) {
+export async function genSitemapItem(id) {
   const sitemapItems = await sitemapBuffer.getMany({
     filter: {
       sitemapId: id,
@@ -219,7 +220,7 @@ async function genSitemapItem(id) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   ${sitemapItems
     .map(
-      (item) => `<url>
+      (item) => `  <url>
     <loc>${item.url}</loc>
     <lastmod>${new Date(item.updatedAt)}</lastmod>
   </url>`,
@@ -236,5 +237,60 @@ export async function updateSitemapItem(domain, id) {
     "application/xml",
     `sitemap-post/${id}.xml`,
     xmlSitemapItem,
+  );
+}
+
+async function genSitemapPageItems(domain, pages) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages
+  .map((page) => {
+    return `  <url>
+    <loc>https://${domain}${page.slug}</loc>
+    <lastmod>${new Date()}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+  })
+  .join("\n")}
+</urlset>`;
+}
+
+export async function updateSitemapPage(domain, pages) {
+  const xmlSitemapPageItem = await genSitemapPageItems(domain, pages);
+  return await uploadR2General(
+    domain,
+    "application/xml",
+    `sitemap-page.xml`,
+    xmlSitemapPageItem,
+  );
+}
+
+async function genSitemapCategoryItems(domain, categories) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${categories
+  .map((category) => {
+    return `  <url>
+    <loc>https://${domain}${category.slug}</loc>
+    <lastmod>${new Date()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+  })
+  .join("\n")}
+</urlset>`;
+}
+
+export async function updateSitemapCategory(domain, categories) {
+  const xmlSitemapCategoryItem = await genSitemapCategoryItems(
+    domain,
+    categories,
+  );
+  return await uploadR2General(
+    domain,
+    "application/xml",
+    `sitemap-category.xml`,
+    xmlSitemapCategoryItem,
   );
 }

@@ -13,88 +13,9 @@ const STALE_WHILE_REVALIDATE = 60 * 60; // 1 hour
 const STALE_IF_ERROR = 60 * 60 * 24 * 7; // 7 days
 
 module.exports = async (req, res) => {
-  res.setHeader(
-    "Cache-Control",
-    `public, max-age=${MAX_AGE}, s-maxage=${S_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}, stale-if-error=${STALE_IF_ERROR}`,
-  );
-
-  if (req.method !== "GET") {
-    return res.status(405).json({ ok: false, error: "Method Not Allowed" });
-  }
-  // if (!isAuthorized(req)) {
-  //   return res.status(401).json({ ok: false, error: "Unauthorized" });
-  // }
-
   try {
     const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
-    let domain = url.searchParams.get("domain");
     const id = url.searchParams.get("id");
-
-    // chỉ cho phép 1 mode
-    if ((!domain && !id) || (domain && id)) {
-      return res.status(400).json({
-        ok: false,
-        error: "Require exactly one of: domain or id",
-      });
-    }
-
-    // mode: domain -> lấy danh sách sitemap
-    if (domain) {
-      if (domain.startsWith("localhost")) {
-        domain = DEFAULT_DOMAIN_DEVELOPER;
-      }
-
-      if (process.env.REQUIRE_REDIS_CACHE === "true") {
-        const siteCache = await redis.get(`sitemap:${domain}`);
-        if (siteCache) {
-          return res.status(200).json({
-            ok: true,
-            source: "redis-cached",
-            items: siteCache,
-          });
-        }
-      }
-
-      const items = (
-        await sitemap.getMany({
-          filter: { domain },
-        })
-      ).map((i) => ({
-        sitemapId: i.sitemapId,
-        domain: i.domain,
-        status: i.status,
-        createdAt: i.createdAt,
-        updatedAt: i.updatedAt,
-      }));
-
-      await redis.set(`sitemap:${domain}`, items, 600);
-
-      res.setHeader(
-        "Cache-Tag",
-        `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-cache`,
-      );
-      res.setHeader(
-        "Vercel-Cache-Tag",
-        `${domain}, sitemap-${domain}, origin-${domain.split(".")[0]}, sitemap-cache`,
-      );
-      return res.status(200).json({
-        ok: true,
-        source: "mongo-database",
-        items: items,
-      });
-    }
-
-    if (process.env.REQUIRE_REDIS_CACHE === "true") {
-      const siteCache = await redis.get(`sitemap:${domain}:${id}`);
-      if (siteCache) {
-        return res.status(200).json({
-          ok: true,
-          source: "redis-cached",
-          sitemapId: id,
-          items: siteCache,
-        });
-      }
-    }
 
     // mode: id -> lấy sitemap item
     const sitemapItem = await sitemap.getOne({ filter: { sitemapId: id } });

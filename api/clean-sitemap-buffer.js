@@ -3,7 +3,6 @@ const { isAuthorized } = require("../helper/isAuthorized");
 const { toStr } = require("../helper/toString");
 const sitemapBuffer = require("../src/sitemap-buffer");
 const sitemap = require("../src/sitemap");
-const { r2 } = require("../database/r2/index");
 const { MAX_DEFAULT_ITEMS_EACH_SITEMAP } = require("../constants");
 
 module.exports = async (req, res) => {
@@ -35,35 +34,17 @@ module.exports = async (req, res) => {
         },
       });
 
-      const result = await r2.set(
-        `sitemap:${sitemapItem.sitemapId}`,
-        items,
-        sitemapItem.domain,
-      );
-
-      const updated = await sitemap.update({
-        filter: {
-          domain: sitemapItem.domain,
-          sitemapId: sitemapItem.sitemapId,
-        },
-        payload: {
-          shardIdR2: result.shardId,
-          keyR2: result.key,
-          dbMode: "r2-cloudflare",
-        },
-      });
-
-      await sitemapBuffer.deleteMany({
+      const result = await sitemapBuffer.deleteMany({
         filter: { sitemapId: sitemapItem.sitemapId },
       });
 
       results.push(result);
-      console.log(sitemapItem.domain, items.length);
+      console.log("Clean sitemap items :", sitemapItem.domain, items.length);
     }
 
     return res.status(200).json({ ok: true, sitemaps, results });
   } catch (err) {
-    console.log("[api/upload-to-r2] error: ", err);
+    console.log("[api/clean-sitemap-buffer] error: ", err);
     return res
       .status(500)
       .json({ ok: false, error: err?.message || "Internal Server Error" });

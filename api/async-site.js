@@ -11,6 +11,8 @@ const {
   updateAdsTxt,
   updateSite,
   updateRobotsTxt,
+  updateSitemapPage,
+  updateSitemapCategory
 } = require("../src/r2upload");
 
 module.exports = async (req, res) => {
@@ -74,11 +76,13 @@ module.exports = async (req, res) => {
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
       if (option === "robots") {
         await updateRobotsTxt(siteItem.domain, robotsTxt);
+        await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
       } else {
         await updateSite(siteItem.domain, payload);
-        await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
+        await updateSitemapPage(siteItem.domain, payload.pages);
+        await updateSitemapCategory(siteItem.domain, payload.categories)
       }
-      items.push(payload);
+      items.push(payload.host);
     }
 
     return res.status(200).json({
