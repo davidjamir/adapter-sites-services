@@ -40,7 +40,12 @@ async function insert(input) {
     sitemapId: sitemapItem.sitemapId,
   });
 
-  await updateSitemapItem(payload.domain, sitemapItem.sitemapId);
+  const bufferItems = await getMany({
+    filter: {
+      sitemapId: sitemapItem.sitemapId,
+    },
+  });
+  await updateSitemapItem(payload.domain, sitemapItem.sitemapId, bufferItems);
 
   return result;
 }

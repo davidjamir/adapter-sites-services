@@ -2,7 +2,6 @@ const storageIndex = require("./storage-index");
 const site = require("./site");
 const origin = require("./origin");
 const sitemap = require("./sitemap");
-const sitemapBuffer = require("./sitemap-buffer");
 
 const { formatPubDate } = require("../helper/date");
 
@@ -189,7 +188,7 @@ async function genSitemapGeneral(domain) {
     .map(
       (item) => `<url>
     <loc>https://${item.domain}/sitemap-post/${item.sitemapId}.xml</loc>
-    <lastmod>${new Date(item.updatedAt)}</lastmod>
+    <lastmod>${new Date(item.updatedAt).toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>`,
@@ -209,28 +208,22 @@ export async function updateSitemapGeneral(domain) {
   );
 }
 
-export async function genSitemapItem(id) {
-  const sitemapItems = await sitemapBuffer.getMany({
-    filter: {
-      sitemapId: id,
-    },
-  });
-
+export async function genSitemapItem(items) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${sitemapItems
+  ${items
     .map(
       (item) => `  <url>
     <loc>${item.url}</loc>
-    <lastmod>${new Date(item.updatedAt)}</lastmod>
+    <lastmod>${new Date(item.updatedAt).toISOString()}</lastmod>
   </url>`,
     )
     .join("")}
 </urlset>`;
 }
 
-export async function updateSitemapItem(domain, id) {
-  const xmlSitemapItem = await genSitemapItem(id);
+export async function updateSitemapItem(domain, id, items) {
+  const xmlSitemapItem = await genSitemapItem(items);
 
   return await uploadR2General(
     domain,
@@ -247,7 +240,7 @@ ${pages
   .map((page) => {
     return `  <url>
     <loc>https://${domain}${page.slug}</loc>
-    <lastmod>${new Date()}</lastmod>
+    <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>`;
@@ -273,7 +266,7 @@ ${categories
   .map((category) => {
     return `  <url>
     <loc>https://${domain}${category.slug}</loc>
-    <lastmod>${new Date()}</lastmod>
+    <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`;

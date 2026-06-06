@@ -35,6 +35,8 @@ module.exports = async (req, res) => {
       filter: { mode: "read-write", status: "active" },
     });
 
+    console.log("Checking 1");
+
     const config = configs[randomInt(0, configs.length - 1)];
     const categories = [...body.item?.categories, "News"];
     const payload = {
@@ -49,6 +51,8 @@ module.exports = async (req, res) => {
       databaseKey: config.databaseKey,
     });
     const stats = await storage.stats({ databaseKey: config.databaseKey });
+
+    console.log("Checking 2");
 
     const dbInfo = await dbConfigs.updateOneDBConfig({
       filter: { segment: config.segment },
@@ -81,6 +85,8 @@ module.exports = async (req, res) => {
       indexDatabaseKey: siteItem.value.indexDatabaseKey,
     };
 
+    console.log("Checking 3");
+
     const postIndex = await storageIndex.insert({
       payload: payloadIndex,
       indexDatabaseKey: payloadIndex.indexDatabaseKey,
@@ -95,6 +101,8 @@ module.exports = async (req, res) => {
 
     const r2feed = await updateFeed(newItem.doc.domain);
     const r2latest = await updateLatest(newItem.doc.domain);
+
+    console.log("Checking 4");
 
     console.log({
       title: newItem.doc.title,
