@@ -1,20 +1,24 @@
 const db = require("../database/collections/storage");
 const { genPostSlug } = require("../helper/genPostSlug");
 
-async function insert(input) {
-  const payload = input.payload;
-  payload.slug = genPostSlug({
-    title: payload.title ?? "",
-  });
+async function uploadR2Storage(endpoint, payload) {
+  const res = await fetch(
+    `${endpoint}/${payload.origin}/${payload.domain}/${payload.slug}.json`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.SECRET_STORAGE_GENERAL_R2}`,
+      },
+      body: JSON.stringify(payload),
+    },
+  );
 
-  const filter = {
-    slug: payload.slug,
-  };
-  return db.insertPost({
-    filter,
-    payload: input.payload,
-    databaseKey: input.databaseKey,
-  });
+  return res.json();
+}
+
+async function insert(endpoint, payload) {
+  return uploadR2Storage(endpoint, payload);
 }
 
 async function getOne(input) {

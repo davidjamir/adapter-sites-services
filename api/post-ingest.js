@@ -9,6 +9,9 @@ const site = require("../src/site");
 const storageIndex = require("../src/storage-index");
 const sitemapBuffer = require("../src/sitemap-buffer");
 const { updateFeed, updateLatest } = require("../src/r2upload");
+const { formatNewYorkDate } = require("../helper/date");
+const { genPostSlug } = require("../helper/genPostSlug");
+const { generateHash } = require("../helper/genHash");
 
 export function randomInt(min = 0, max = 100) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -36,48 +39,42 @@ module.exports = async (req, res) => {
     });
 
     const config = configs[randomInt(0, configs.length - 1)];
+
     const categories = [...body.item?.categories, "News"];
     const payload = {
+      tags: [],
       ...body.item,
+      id: generateHash(8),
       segment: config.segment,
       categories,
       mainCategory: categories[0],
       author: genAuthor(),
+      createdAt: formatNewYorkDate(new Date()),
+      slug: genPostSlug({
+        title: toStr(body.item.title),
+      }),
     };
-    const newItem = await storage.insert({
-      payload,
-      databaseKey: config.databaseKey,
-    });
-    // const stats = await storage.stats({ databaseKey: config.databaseKey });
 
-    // const dbInfo = await dbConfigs.updateOneDBConfig({
-    //   filter: { segment: config.segment },
-    //   payload: {
-    //     type: "database",
-    //     databaseKey: config.databaseKey,
-    //     segment: config.segment,
-    //     ...stats,
-    //   },
-    // });
+    const newItem = await storage.insert(config.endpoint, payload);
 
-    await origin.incItems({ origin: newItem.doc.origin });
+    await origin.incItems({ origin: payload.origin });
     const siteItem = await site.incItems({
-      origin: newItem.doc.origin,
-      domain: newItem.doc.domain,
+      origin: payload.origin,
+      domain: payload.domain,
     });
 
     const payloadIndex = {
-      domain: newItem.doc.domain,
-      origin: newItem.doc.origin,
-      title: newItem.doc.title,
-      slug: newItem.doc.slug,
-      snippet: newItem.doc.snippet,
-      featuredImage: newItem.doc.featuredImage,
-      segment: newItem.doc.segment,
-      categories: newItem.doc.categories,
-      mainCategory: newItem.doc.mainCategory,
-      author: newItem.doc.author,
-      tags: newItem.doc.tags || [],
+      domain: payload.domain,
+      origin: payload.origin,
+      title: payload.title,
+      slug: payload.slug,
+      snippet: payload.snippet,
+      featuredImage: payload.featuredImage,
+      segment: payload.segment,
+      categories: payload.categories,
+      mainCategory: payload.mainCategory,
+      author: payload.author,
+      tags: payload.tags || [],
       indexDatabaseKey: siteItem.value.indexDatabaseKey,
     };
 
@@ -88,19 +85,19 @@ module.exports = async (req, res) => {
 
     const newItemSitemapBuffer = await sitemapBuffer.insert({
       payload: {
-        domain: newItem.doc.domain,
-        url: `https://${newItem.doc.domain}/post/${newItem.doc.segment}/${newItem.doc.slug}`,
+        domain: payload.domain,
+        url: `https://${payload.domain}/post/${payload.segment}/${payload.slug}`,
       },
     });
 
-    const r2feed = await updateFeed(newItem.doc.domain);
-    const r2latest = await updateLatest(newItem.doc.domain);
+    const r2feed = await updateFeed(payload.domain);
+    const r2latest = await updateLatest(payload.domain);
 
     console.log({
-      title: newItem.doc.title,
-      domain: newItem.doc.domain,
-      segment: newItem.doc.segment,
-      categories: newItem.doc.categories,
+      title: payload.title,
+      domain: payload.domain,
+      segment: payload.segment,
+      categories: payload.categories,
       r2feed,
       r2latest,
     });
