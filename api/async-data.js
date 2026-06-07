@@ -59,13 +59,14 @@ module.exports = async (req, res) => {
     });
 
     const items = [];
+    const ids = [];
     for (item of posts) {
       const payload = {
         id: item._id,
         title: item.title,
         slug: item.slug,
         domain: item.domain,
-        featuredImaged: item.featuredImage || item.featuredImaged || "",
+        featuredImage: item.featuredImage || item.featureImage || "",
         snippet: item.snippet,
         mainCategory: item.mainCategory || item.categories[0] || "",
         categories: item.categories || [],
@@ -79,11 +80,20 @@ module.exports = async (req, res) => {
 
       const newItems = await storage.insert(config.endpoint, payload);
       items.push({ response: newItems, payload });
+      ids.push(item._id);
     }
+
+    const deleted = await storage.deleteMany({
+      filter: {
+        _id: { $in: ids },
+      },
+      databaseKey: Number(key),
+    });
 
     return res.status(200).json({
       ok: true,
       count: items.length,
+      deleted,
       items,
     });
   } catch (err) {

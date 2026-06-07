@@ -125,22 +125,14 @@ async function getManyPost({
 //   return col.deleteOne(filter);
 // }
 
-// async function deleteManyPost({
-//   filter,
-//   databaseKey,
-//   collectionName = COLLECTION_NAME,
-//   sort,
-//   limit,
-// }) {
-//   const col = await getCollection(collectionName, databaseKey);
-//   const ids = await col
-//     .find(filter, findOptions({ sort, limit, projection: { _id: 1 } }))
-//     .toArray();
-//   if (!ids.length) {
-//     return { acknowledged: true, deletedCount: 0 };
-//   }
-//   return col.deleteMany({ _id: { $in: ids.map((d) => d._id) } });
-// }
+async function deleteManyPost({
+  filter,
+  databaseKey,
+  collectionName = COLLECTION_NAME,
+}) {
+  const col = await getCollection(collectionName, databaseKey);
+  return col.deleteMany(filter);
+}
 
 async function statsDB({ collectionName = COLLECTION_NAME, databaseKey }) {
   const db = await getDb(databaseKey);
@@ -161,6 +153,6 @@ module.exports = {
   getManyPost,
   // getManyPostPerCategory,
   // deleteOnePost,
-  // deleteManyPost,
+  deleteManyPost,
   statsDB,
 };

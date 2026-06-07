@@ -59,15 +59,12 @@ async function getMany(input) {
 //   });
 // }
 
-// async function deleteMany(input) {
-//   return db.deleteManyPost({
-//     collectionName: input.collectionName,
-//     filter: input.filter,
-//     sort: input.sort,
-//     limit: input.limit,
-//     databaseKey: input.databaseKey,
-//   });
-// }
+async function deleteMany(input) {
+  return db.deleteManyPost({
+    filter: input.filter,
+    databaseKey: input.databaseKey,
+  });
+}
 
 async function stats({ databaseKey }) {
   const { statsDb, statsCollection } = await db.statsDB({ databaseKey });
@@ -87,7 +84,7 @@ const storage = {
   getMany,
   //   getManyWithCategory,
   //   deleteOne,
-  //   deleteMany,
+  deleteMany,
   stats,
 };
 
