@@ -21,6 +21,16 @@ async function getMany(input) {
     limit: input.limit,
   });
 }
-
+// async function getManyWithCategory(input) {
+//   return db.getManyPostPerCategory({
+//     collectionName: input.collectionName,
+//     filter: input.filter,
+//     categories: input.categories,
+//     categoryField: input.categoryField,
+//     perCategoryLimit: input.perCategoryLimit,
+//     sort: input.sort,
+//     databaseKey: input.databaseKey,
+//   });
+// }
 const storageIndex = { insert, getMany };
 module.exports = storageIndex;

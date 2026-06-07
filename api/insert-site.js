@@ -1,10 +1,8 @@
 // api/news-ingest.js
 const { isAuthorized } = require("../helper/isAuthorized");
-const { toStr } = require("../helper/toString");
 const storageIndex = require("../src/storage-index");
 const site = require("../src/site");
 const origin = require("../src/origin");
-const { redis } = require("../database/redis/index");
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store, max-age=0");

@@ -1,9 +1,7 @@
 const { isAuthorized } = require("../helper/isAuthorized");
-const { toStr } = require("../helper/toString");
 const { formatPubDate } = require("../helper/date");
 const storageIndex = require("../src/storage-index");
 const site = require("../src/site");
-const { redis } = require("../database/redis/index");
 const { DEFAULT_DOMAIN_DEVELOPER } = require("../constants");
 
 const MAX_AGE = 0;
@@ -41,18 +39,6 @@ module.exports = async (req, res) => {
       domain = DEFAULT_DOMAIN_DEVELOPER;
     }
 
-    if (process.env.REQUIRE_REDIS_CACHE === "true") {
-      const siteCache = await redis.get(`tag:${domain}:${tag}`);
-      if (siteCache) {
-        return res.status(200).json({
-          ok: true,
-          source: "redis-cached",
-          count: (siteCache || []).length,
-          items: siteCache,
-        });
-      }
-    }
-
     const siteItem = await site.getOne({ domain });
     if (!siteItem) {
       return res.status(404).json({
@@ -88,9 +74,6 @@ module.exports = async (req, res) => {
         createdAt: formatPubDate(item.createdAt),
       }));
 
-    if (process.env.REQUIRE_REDIS_CACHE === "true") {
-      await redis.set(`tag:${domain}:${tag}`, items, 600);
-    }
     res.setHeader(
       "Cache-Tag",
       `${siteItem.domain}, tag-${siteItem.domain}, origin-${siteItem.origin}, tag-cache`,

@@ -1,6 +1,5 @@
 // api/news-ingest.js
 const { isAuthorized } = require("../helper/isAuthorized");
-const { toStr } = require("../helper/toString");
 const sitemapBuffer = require("../src/sitemap-buffer");
 const sitemap = require("../src/sitemap");
 const { MAX_DEFAULT_ITEMS_EACH_SITEMAP } = require("../constants");

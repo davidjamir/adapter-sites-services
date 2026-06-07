@@ -142,6 +142,15 @@ async function getManyPost({
 //   return col.deleteMany({ _id: { $in: ids.map((d) => d._id) } });
 // }
 
+// async function statsDB({ collectionName = COLLECTION_NAME, databaseKey }) {
+//   const db = await getDb(databaseKey);
+//   const statsDb = await db.stats();
+//   const statsCollection = await db.command({
+//     collStats: collectionName,
+//   });
+//   return { statsDb, statsCollection };
+// }
+
 module.exports = {
   insertPostIndex,
   // getOnePost,
