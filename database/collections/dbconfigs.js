@@ -19,14 +19,9 @@ function findOptions({ sort, limit, projection }) {
   return opts;
 }
 
-async function getOneDBConfig({
-  collectionName = COLLECTION_NAME,
-  filter,
-  sort,
-}) {
+async function getOneDBConfig({ collectionName = COLLECTION_NAME, filter }) {
   const col = await getCollection(collectionName);
-  const opts = findOptions({ sort, limit: 1 });
-  return col.findOne(filter, opts);
+  return col.findOne(filter);
 }
 
 async function getManyDBConfigs({

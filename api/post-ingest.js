@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
       title: payload.title,
       slug: payload.slug,
       snippet: payload.snippet,
-      featuredImage: payload.featuredImage,
+      featuredImaged: payload.featuredImaged,
       segment: payload.segment,
       categories: payload.categories,
       mainCategory: payload.mainCategory,

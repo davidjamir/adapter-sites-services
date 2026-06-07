@@ -63,16 +63,16 @@ async function getOnePost({
   return col.findOne(filter, opts);
 }
 
-// async function getManyPost({
-//   filter,
-//   databaseKey,
-//   collectionName = COLLECTION_NAME,
-//   sort,
-//   limit,
-// }) {
-//   const col = await getCollection(collectionName, databaseKey);
-//   return col.find(filter, findOptions({ sort, limit })).toArray();
-// }
+async function getManyPost({
+  filter,
+  databaseKey,
+  collectionName = COLLECTION_NAME,
+  sort,
+  limit,
+}) {
+  const col = await getCollection(collectionName, databaseKey);
+  return col.find(filter, findOptions({ sort, limit })).toArray();
+}
 
 // /** Mỗi category tối đa perCategoryLimit bản (aggregate, không dùng find limit chung). */
 // async function getManyPostPerCategory({
@@ -158,7 +158,7 @@ module.exports = {
   DEFAULT_PER_CATEGORY_LIMIT,
   insertPost,
   getOnePost,
-  // getManyPost,
+  getManyPost,
   // getManyPostPerCategory,
   // deleteOnePost,
   // deleteManyPost,

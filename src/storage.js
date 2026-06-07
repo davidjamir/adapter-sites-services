@@ -30,15 +30,14 @@ async function getOne(input) {
   });
 }
 
-// async function getMany(input) {
-//   return db.getManyPost({
-//     collectionName: input.collectionName,
-//     filter: input.filter,
-//     sort: input.sort,
-//     limit: input.limit,
-//     databaseKey: input.databaseKey,
-//   });
-// }
+async function getMany(input) {
+  return db.getManyPost({
+    filter: input.filter,
+    sort: input.sort,
+    limit: input.limit,
+    databaseKey: input.databaseKey,
+  });
+}
 
 // async function getManyWithCategory(input) {
 //   return db.getManyPostPerCategory({
@@ -85,7 +84,7 @@ async function stats({ databaseKey }) {
 const storage = {
   insert,
   getOne,
-  //   getMany,
+  getMany,
   //   getManyWithCategory,
   //   deleteOne,
   //   deleteMany,
