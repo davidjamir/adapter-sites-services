@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
       }),
     };
 
-    const newItem = await storage.insert(config.endpoint, payload);
+    const r2storage = await storage.insert(config.endpoint, payload);
 
     await origin.incItems({ origin: payload.origin });
     const siteItem = await site.incItems({
@@ -98,6 +98,7 @@ module.exports = async (req, res) => {
       domain: payload.domain,
       segment: payload.segment,
       categories: payload.categories,
+      r2storage,
       r2feed,
       r2latest,
     });
