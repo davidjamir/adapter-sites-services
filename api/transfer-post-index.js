@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    if (siteItem.indexDatebaseKey === target) {
+    if (siteItem.indexDatabaseKey === target) {
       return res.status(400).json({
         ok: false,
         error: "Require target key different with current index database key!",
