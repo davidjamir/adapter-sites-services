@@ -13,14 +13,29 @@ async function insert(input) {
   });
 }
 
+async function insertMany(input) {
+  return db.insertManyPostIndex({
+    payload: input.payload,
+    indexDatabaseKey: input.indexDatabaseKey,
+  });
+}
+
 async function getMany(input) {
-  return db.getManyPost({
+  return db.getManyPostIndex({
     filter: input.filter,
     indexDatabaseKey: input.indexDatabaseKey,
     sort: input.sort,
     limit: input.limit,
   });
 }
+
+async function deleteMany(input) {
+  return db.deleteManyPostIndex({
+    filter: input.filter,
+    indexDatabaseKey: input.indexDatabaseKey,
+  });
+}
+
 // async function getManyWithCategory(input) {
 //   return db.getManyPostPerCategory({
 //     collectionName: input.collectionName,
@@ -32,5 +47,5 @@ async function getMany(input) {
 //     databaseKey: input.databaseKey,
 //   });
 // }
-const storageIndex = { insert, getMany };
+const storageIndex = { insert, insertMany, getMany, deleteMany };
 module.exports = storageIndex;

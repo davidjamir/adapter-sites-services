@@ -36,8 +36,8 @@ async function insertPostIndex({
     filter,
     {
       $setOnInsert: {
-        ...payload,
         createdAt: new Date(),
+        ...payload,
       },
     },
     {
@@ -52,6 +52,23 @@ async function insertPostIndex({
   };
 }
 
+async function insertManyPostIndex({
+  collectionName = COLLECTION_NAME,
+  payload,
+  indexDatabaseKey,
+}) {
+  const col = await getCollection(collectionName, indexDatabaseKey);
+
+  const result = await col.insertMany(payload, {
+    ordered: false, // insert cái nào được thì insert, không fail cả batch
+  });
+
+  return {
+    insertedCount: result.insertedCount,
+    insertedIds: result.insertedIds,
+  };
+}
+
 // async function getOnePost({
 //   filter,
 //   databaseKey,
@@ -63,7 +80,7 @@ async function insertPostIndex({
 //   return col.findOne(filter, opts);
 // }
 
-async function getManyPost({
+async function getManyPostIndex({
   collectionName = COLLECTION_NAME,
   filter,
   indexDatabaseKey,
@@ -125,22 +142,14 @@ async function getManyPost({
 //   return col.deleteOne(filter);
 // }
 
-// async function deleteManyPost({
-//   filter,
-//   databaseKey,
-//   collectionName = COLLECTION_NAME,
-//   sort,
-//   limit,
-// }) {
-//   const col = await getCollection(collectionName, databaseKey);
-//   const ids = await col
-//     .find(filter, findOptions({ sort, limit, projection: { _id: 1 } }))
-//     .toArray();
-//   if (!ids.length) {
-//     return { acknowledged: true, deletedCount: 0 };
-//   }
-//   return col.deleteMany({ _id: { $in: ids.map((d) => d._id) } });
-// }
+async function deleteManyPostIndex({
+  collectionName = COLLECTION_NAME,
+  filter,
+  indexDatabaseKey,
+}) {
+  const col = await getCollection(collectionName, indexDatabaseKey);
+  return col.deleteMany(filter);
+}
 
 // async function statsDB({ collectionName = COLLECTION_NAME, databaseKey }) {
 //   const db = await getDb(databaseKey);
@@ -153,8 +162,10 @@ async function getManyPost({
 
 module.exports = {
   insertPostIndex,
+  insertManyPostIndex,
+  getManyPostIndex,
+  deleteManyPostIndex,
   // getOnePost,
-  getManyPost,
   // getManyPostPerCategory,
   // deleteOnePost,
   // deleteManyPost,
