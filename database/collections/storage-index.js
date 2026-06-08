@@ -69,17 +69,6 @@ async function insertManyPostIndex({
   };
 }
 
-// async function getOnePost({
-//   filter,
-//   databaseKey,
-//   collectionName = COLLECTION_NAME,
-//   sort,
-// }) {
-//   const col = await getCollection(collectionName, databaseKey);
-//   const opts = findOptions({ sort, limit: 1 });
-//   return col.findOne(filter, opts);
-// }
-
 async function getManyPostIndex({
   collectionName = COLLECTION_NAME,
   filter,
@@ -151,20 +140,24 @@ async function deleteManyPostIndex({
   return col.deleteMany(filter);
 }
 
-// async function statsDB({ collectionName = COLLECTION_NAME, databaseKey }) {
-//   const db = await getDb(databaseKey);
-//   const statsDb = await db.stats();
-//   const statsCollection = await db.command({
-//     collStats: collectionName,
-//   });
-//   return { statsDb, statsCollection };
-// }
+async function statsDBPostIndex({
+  collectionName = COLLECTION_NAME,
+  indexDatabaseKey,
+}) {
+  const db = await getDb(indexDatabaseKey);
+  const statsDb = await db.stats();
+  const statsCollection = await db.command({
+    collStats: collectionName,
+  });
+  return { statsDb, statsCollection };
+}
 
 module.exports = {
   insertPostIndex,
   insertManyPostIndex,
   getManyPostIndex,
   deleteManyPostIndex,
+  statsDBPostIndex,
   // getOnePost,
   // getManyPostPerCategory,
   // deleteOnePost,
