@@ -158,7 +158,6 @@ module.exports = {
   getManyPostIndex,
   deleteManyPostIndex,
   statsDBPostIndex,
-  // getOnePost,
   // getManyPostPerCategory,
   // deleteOnePost,
   // deleteManyPost,
