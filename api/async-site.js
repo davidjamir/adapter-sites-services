@@ -10,7 +10,7 @@ const {
   updateSite,
   updateRobotsTxt,
   updateSitemapPage,
-  updateSitemapCategory
+  updateSitemapCategory,
 } = require("../src/r2upload");
 
 module.exports = async (req, res) => {
@@ -24,6 +24,7 @@ module.exports = async (req, res) => {
   try {
     const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
     const originValue = url.searchParams.get("origin");
+    const domain = url.searchParams.get("domain");
     const option = url.searchParams.get("option");
 
     if (!originValue) {
@@ -35,7 +36,9 @@ module.exports = async (req, res) => {
 
     const originItem = await origin.getOne({ origin: originValue });
 
-    const siteItems = await site.getMany({ origin: originValue });
+    const siteItems = !domain
+      ? await site.getMany({ origin: originValue })
+      : await site.getMany({ origin: originValue, domain });
 
     if (!originItem) {
       return res.status(404).json({
@@ -78,7 +81,7 @@ module.exports = async (req, res) => {
       } else {
         await updateSite(siteItem.domain, payload);
         await updateSitemapPage(siteItem.domain, payload.pages);
-        await updateSitemapCategory(siteItem.domain, payload.categories)
+        await updateSitemapCategory(siteItem.domain, payload.categories);
       }
       items.push(payload.host);
     }
