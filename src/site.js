@@ -10,6 +10,10 @@ async function getMany(input) {
   return db.getManySite({ filter });
 }
 
+async function getCount(input) {
+  return (await db.getManySite({ filter: input.filter })).length;
+}
+
 async function update(input) {
   const filter = { domain: input.domain };
 
@@ -35,6 +39,7 @@ const site = {
   update,
   incItems,
   getMany,
+  getCount,
 };
 
 module.exports = site;

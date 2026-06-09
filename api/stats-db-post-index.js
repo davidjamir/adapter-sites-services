@@ -39,10 +39,14 @@ module.exports = async (req, res) => {
     const results = [];
     for (let index = 1; index <= NUMBER_SHARD_DATABASE_INDEX; index++) {
       const stats = await storageIndex.stats({ indexDatabaseKey: index });
+      const siteCount = await site.getCount({
+        filter: { indexDatabaseKey: index },
+      });
 
       const payload = {
         db: stats.statsDb.db,
         collections: stats.statsDb.collections,
+        siteCount,
         objects: stats.statsDb.objects,
         avgObjSize: formatBytes(stats.statsDb.avgObjSize),
         storageSize: formatBytes(stats.statsDb.storageSize),
