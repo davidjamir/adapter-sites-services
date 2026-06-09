@@ -6,7 +6,7 @@ async function getOne(input) {
 }
 
 async function getMany(input) {
-  const filter = { origin: input.origin };
+  const filter = { origin: input.origin, domain: input.domain };
   return db.getManySite({ filter });
 }
 
