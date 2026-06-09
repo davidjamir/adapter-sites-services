@@ -36,6 +36,9 @@ async function deleteMany(input) {
   });
 }
 
+async function stats(input) {
+  return db.statsDBPostIndex({ indexDatabaseKey: input.indexDatabaseKey });
+}
 // async function getManyWithCategory(input) {
 //   return db.getManyPostPerCategory({
 //     collectionName: input.collectionName,
@@ -47,5 +50,5 @@ async function deleteMany(input) {
 //     databaseKey: input.databaseKey,
 //   });
 // }
-const storageIndex = { insert, insertMany, getMany, deleteMany };
+const storageIndex = { insert, insertMany, getMany, deleteMany, stats };
 module.exports = storageIndex;
