@@ -37,8 +37,8 @@ module.exports = async (req, res) => {
     const originItem = await origin.getOne({ origin: originValue });
 
     const siteItems = !domain
-      ? await site.getMany({ origin: originValue })
-      : await site.getMany({ origin: originValue, domain });
+      ? await site.getMany({ filter: { origin: originValue } })
+      : await site.getMany({ filter: { origin: originValue, domain } });
 
     if (!originItem) {
       return res.status(404).json({
