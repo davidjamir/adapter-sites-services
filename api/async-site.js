@@ -77,11 +77,11 @@ module.exports = async (req, res) => {
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
       if (option === "robots") {
         await updateRobotsTxt(siteItem.domain, robotsTxt);
-        await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
+        await updateSitemapCategory(siteItem.domain, payload.categories);
+        await updateSitemapPage(siteItem.domain, payload.pages);
       } else {
         await updateSite(siteItem.domain, payload);
-        await updateSitemapPage(siteItem.domain, payload.pages);
-        await updateSitemapCategory(siteItem.domain, payload.categories);
+        await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
       }
       items.push(payload.host);
     }
