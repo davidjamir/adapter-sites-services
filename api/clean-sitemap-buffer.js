@@ -37,6 +37,11 @@ module.exports = async (req, res) => {
         filter: { sitemapId: sitemapItem.sitemapId },
       });
 
+      await sitemap.update({
+        filter: { sitemapId: sitemapItem.sitemapId },
+        payload: { dbMode: "r2-cloudflare" },
+      });
+
       results.push(result);
       console.log("Clean sitemap items :", sitemapItem.domain, items.length);
     }
