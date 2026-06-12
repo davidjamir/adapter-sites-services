@@ -25,7 +25,11 @@ module.exports = async (req, res) => {
     const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
     const originValue = url.searchParams.get("origin");
     const domain = url.searchParams.get("domain");
-    const option = url.searchParams.get("option");
+    const keyA = url.searchParams.get("keyA");
+    const keyB = url.searchParams.get("keyB");
+    const keyC = url.searchParams.get("keyC");
+    const keyD = url.searchParams.get("keyD");
+    const keyE = url.searchParams.get("keyE");
 
     if (!originValue) {
       return res.status(400).json({
@@ -75,14 +79,23 @@ module.exports = async (req, res) => {
         },
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
-      if (option === "robots") {
-        await updateRobotsTxt(siteItem.domain, robotsTxt);
-        await updateSitemapCategory(siteItem.domain, payload.categories);
-        await updateSitemapPage(siteItem.domain, payload.pages);
-      } else {
+
+      if (keyA === "true") {
         await updateSite(siteItem.domain, payload);
+      }
+      if (keyB === "true") {
         await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
       }
+      if (keyC === "true") {
+        await updateSitemapPage(siteItem.domain, payload.pages);
+      }
+      if (keyD === "true") {
+        await updateSitemapCategory(siteItem.domain, payload.categories);
+      }
+      if (keyE === "true") {
+        await updateRobotsTxt(siteItem.domain, robotsTxt);
+      }
+
       items.push(payload.host);
     }
 
