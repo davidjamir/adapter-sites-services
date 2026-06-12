@@ -161,7 +161,7 @@ export async function updateSite(domain, payload) {
   );
 }
 
-async function genSitemapGeneral(domain) {
+export async function genSitemapGeneral(domain) {
   const sitemapItems = await sitemap.getMany({
     filter: { domain },
   });
@@ -188,7 +188,7 @@ async function genSitemapGeneral(domain) {
     .map(
       (item) => `<url>
     <loc>https://${item.domain}/sitemap-post/${item.sitemapId}.xml</loc>
-    <lastmod>${new Date(item.updatedAt).toISOString()}</lastmod>
+    <lastmod>${item.updatedAt.toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>`,
@@ -199,7 +199,6 @@ async function genSitemapGeneral(domain) {
 
 export async function updateSitemapGeneral(domain) {
   const xmlSitemap = await genSitemapGeneral(domain);
-
   return await uploadR2General(
     domain,
     "application/xml",
@@ -215,7 +214,7 @@ export async function genSitemapItem(items) {
     .map(
       (item) => `  <url>
     <loc>${item.url}</loc>
-    <lastmod>${new Date(item.updatedAt).toISOString()}</lastmod>
+    <lastmod>${item.updatedAt.toISOString()}</lastmod>
   </url>`,
     )
     .join("")}
@@ -224,7 +223,6 @@ export async function genSitemapItem(items) {
 
 export async function updateSitemapItem(domain, id, items) {
   const xmlSitemapItem = await genSitemapItem(items);
-
   return await uploadR2General(
     domain,
     "application/xml",
