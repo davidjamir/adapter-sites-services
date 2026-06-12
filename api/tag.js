@@ -47,8 +47,8 @@ module.exports = async (req, res) => {
       });
     }
     const safeTag = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const items = await storageIndex
-      .getMany({
+    const items = (
+      await storageIndex.getMany({
         filter: {
           domain: siteItem.domain,
           tags: {
@@ -60,19 +60,19 @@ module.exports = async (req, res) => {
         sort: { createdAt: -1 },
         limit: 25,
       })
-      .map((item) => ({
-        id: item._id,
-        title: item.title,
-        slug: item.slug,
-        domain: item.domain,
-        featuredImage: item.featuredImage,
-        snippet: item.snippet,
-        mainCategory: item.mainCategory,
-        categories: item.categories,
-        segment: item.segment,
-        author: item.author,
-        createdAt: formatPubDate(item.createdAt),
-      }));
+    ).map((item) => ({
+      id: item._id,
+      title: item.title,
+      slug: item.slug,
+      domain: item.domain,
+      featuredImage: item.featuredImage,
+      snippet: item.snippet,
+      mainCategory: item.mainCategory,
+      categories: item.categories,
+      segment: item.segment,
+      author: item.author,
+      createdAt: formatPubDate(item.createdAt),
+    }));
 
     res.setHeader(
       "Cache-Tag",
