@@ -79,6 +79,10 @@ module.exports = async (req, res) => {
           description: siteItem.description || originItem.seo?.description,
           canonicalUrl: `https://${siteItem.domain}`,
         },
+        config: {
+          ...originItem.config,
+          ...siteItem.config,
+        },
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
 
