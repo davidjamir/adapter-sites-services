@@ -63,7 +63,7 @@ module.exports = async (req, res) => {
         origin: siteItem.origin,
         name: siteItem.name,
         icon: siteItem.icon || originItem.icon,
-        logo: siteItem.icon || originItem.icon,
+        logo: siteItem.logo || originItem.logo,
         theme: siteItem.theme || "news",
         siteCategory: siteItem.siteCategory,
         configView: siteItem.configView,
