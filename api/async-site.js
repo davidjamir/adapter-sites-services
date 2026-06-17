@@ -64,6 +64,7 @@ module.exports = async (req, res) => {
         name: siteItem.name,
         icon: siteItem.icon || originItem.icon,
         logo: siteItem.logo || originItem.logo,
+        wordmark: siteItem.wordmark,
         theme: siteItem.theme || "news",
         siteCategory: siteItem.siteCategory,
         configView: siteItem.configView,
