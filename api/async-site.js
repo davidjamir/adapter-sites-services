@@ -12,6 +12,8 @@ const {
   updateSitemapPage,
   updateSitemapCategory,
   updateSitemapGeneral,
+  updateFeed,
+  updateLatest,
 } = require("../src/r2upload");
 
 module.exports = async (req, res) => {
@@ -32,6 +34,8 @@ module.exports = async (req, res) => {
     const keyD = url.searchParams.get("keyD");
     const keyE = url.searchParams.get("keyE");
     const keyF = url.searchParams.get("keyF");
+    const keyG = url.searchParams.get("keyG");
+    const keyH = url.searchParams.get("keyH");
 
     if (!originValue) {
       return res.status(400).json({
@@ -104,6 +108,12 @@ module.exports = async (req, res) => {
       }
       if (keyF === "true") {
         await updateRobotsTxt(siteItem.domain, robotsTxt);
+      }
+      if (keyG === "true") {
+        await updateFeed(siteItem.domain);
+      }
+      if (keyH === "true") {
+        await updateLatest(siteItem.domain);
       }
 
       items.push(payload.host);
