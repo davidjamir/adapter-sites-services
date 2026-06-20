@@ -88,6 +88,10 @@ module.exports = async (req, res) => {
           ...originItem.config,
           ...siteItem.config,
         },
+        analytics: {
+          ...originItem?.analytics,
+          ...siteItem?.analytics,
+        },
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
 

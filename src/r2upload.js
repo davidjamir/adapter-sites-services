@@ -82,6 +82,14 @@ async function genFeed(domain) {
       description: siteItem.description || originItem.seo?.description,
       canonicalUrl: `https://${siteItem.domain}`,
     },
+    config: {
+      ...originItem.config,
+      ...siteItem.config,
+    },
+    analytics: {
+      ...originItem?.analytics,
+      ...siteItem?.analytics,
+    },
   };
 
   const posts = await getLatestPosts(
