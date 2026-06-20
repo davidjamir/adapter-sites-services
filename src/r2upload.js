@@ -97,22 +97,25 @@ async function genFeed(domain) {
             <description>${siteRes.seo.description}</description>
             <title>${siteRes.seo.title}</title>
             <link>${siteRes.seo.canonicalUrl}</link>
-            ${posts
-              .map(
-                (post) => `<item>
+            ${
+              posts.length > 0 &&
+              posts
+                .map(
+                  (post) => `<item>
                 <title><![CDATA[${post.title ?? ""}]]></title>
-                <link>${siteRes.baseUrl}/post/${post.segment}/${post.slug}</link>
+                <link>${siteRes.baseUrl}/post/${post.segment}/${attr(post.slug)}</link>
                 <description><![CDATA[${post.snippet ?? ""}]]></description>
                 <pubDate>${post.createdAt ?? ""}</pubDate>
-                <author>${post.author ?? ""}</author>
+                <author>${attr(post.author ?? "")}</author>
                 <guid isPermaLink="false">${post.id ?? ""}</guid>
                 <language>en</language>
-                <media:thumbnail url="${post.featuredImage}" caption="${attr(post.title)}"/>
+                <media:thumbnail url="${attr(post.featuredImage)}" caption="${attr(post.title)}"/>
                 <flatplan:sponsor/>
-                <flatplan:author name="${post.author}"/>
+                <flatplan:author name="${attr(post.author)}"/>
             </item>`,
-              )
-              .join("")}
+                )
+                .join("")
+            }
         </channel>
     </rss>`;
 }
