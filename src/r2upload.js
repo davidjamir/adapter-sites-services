@@ -94,8 +94,8 @@ async function genFeed(domain) {
     <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:mi="http://schemas.ingestion.microsoft.com/common/" xmlns:flatplan="https://www.wearemathematics.co.uk/flatplan-feedspec/">
         <channel>
             <atom:link href="${siteRes.baseUrl}/feed" rel="self" type="application/rss+xml" />
-            <description>${siteRes.seo.description}</description>
-            <title>${siteRes.seo.title}</title>
+            <title><![CDATA[${siteRes.seo.title}]]></title>
+            <description><![CDATA[${siteRes.seo.description}]]></description>
             <link>${siteRes.seo.canonicalUrl}</link>
             ${posts
               .map(
