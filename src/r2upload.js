@@ -97,11 +97,9 @@ async function genFeed(domain) {
             <description>${siteRes.seo.description}</description>
             <title>${siteRes.seo.title}</title>
             <link>${siteRes.seo.canonicalUrl}</link>
-            ${
-              posts.length > 0 &&
-              posts
-                .map(
-                  (post) => `<item>
+            ${posts
+              .map(
+                (post) => `<item>
                 <title><![CDATA[${post.title ?? ""}]]></title>
                 <link>${siteRes.baseUrl}/post/${post.segment}/${attr(post.slug)}</link>
                 <description><![CDATA[${post.snippet ?? ""}]]></description>
@@ -113,9 +111,8 @@ async function genFeed(domain) {
                 <flatplan:sponsor/>
                 <flatplan:author name="${attr(post.author)}"/>
             </item>`,
-                )
-                .join("")
-            }
+              )
+              .join("")}
         </channel>
     </rss>`;
 }
