@@ -97,7 +97,7 @@ async function genFeed(domain) {
     },
     analytics: {
       gaId: siteItem.analytics?.gaId || originItem.analytics?.gaId || "",
-      gtmId: siteIte.analytics?.gtmId || originItem.analytics?.gtmId || "",
+      gtmId: siteItem.analytics?.gtmId || originItem.analytics?.gtmId || "",
     },
   };
 
