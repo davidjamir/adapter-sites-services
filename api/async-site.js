@@ -85,12 +85,23 @@ module.exports = async (req, res) => {
           canonicalUrl: `https://${siteItem.domain}`,
         },
         config: {
-          ...originItem.config,
-          ...siteItem.config,
+          colorHeader:
+            siteItem.config?.colorHeader || originItem.config.colorHeader,
+          colorTextHeader:
+            siteItem.config?.colorTextHeader ||
+            originItem.config?.colorTextHeader,
+          visibledBreadcrumb:
+            siteItem.config?.visibledBreadcrumb ||
+            originItem.config.visibledBreadcrumb,
+          customOpengraphImage:
+            siteItem.config?.customOpengraphImage ||
+            originItem.config.customOpengraphImage,
+          enabledAds:
+            siteItem.config?.enabledAds || originItem.config.enabledAds,
         },
         analytics: {
-          ...originItem?.analytics,
-          ...siteItem?.analytics,
+          gaId: siteItem.analytics?.gaId || originItem.analytics?.gaId || "",
+          gtmId: siteItem.analytics?.gtmId || originItem.analytics?.gtmId || "",
         },
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
