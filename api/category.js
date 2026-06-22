@@ -49,7 +49,7 @@ module.exports = async (req, res) => {
 
     const items = (
       await storageIndex.getMany({
-        filter: { domain: siteItem.domain, mainCategory: category },
+        filter: { domain: siteItem.domain, categories: category },
         indexDatabaseKey: siteItem.indexDatabaseKey,
         sort: { createdAt: -1 },
         limit: 25,

@@ -46,15 +46,11 @@ module.exports = async (req, res) => {
         error: "Site not found",
       });
     }
-    const safeTag = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const items = (
       await storageIndex.getMany({
         filter: {
           domain: siteItem.domain,
-          tags: {
-            $regex: safeTag,
-            $options: "i",
-          },
+          tags: tag.toLowerCase().trim(),
         },
         indexDatabaseKey: siteItem.indexDatabaseKey,
         sort: { createdAt: -1 },
@@ -71,6 +67,7 @@ module.exports = async (req, res) => {
       categories: item.categories,
       segment: item.segment,
       author: item.author,
+      tags: item.tags || [],
       createdAt: formatPubDate(item.createdAt),
     }));
 
