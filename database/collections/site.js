@@ -127,6 +127,11 @@ async function insertOneSite({ collectionName = COLLECTION_NAME, payload }) {
           Math.floor(Math.random() * NUMBER_SHARD_DATABASE_INDEX) + 1,
         createdAt: new Date(),
         totalItems: 0,
+        config: {
+          colorHeader: "transparent",
+          customOpengraphImage: true,
+        },
+        analytics: {},
       },
     },
     { upsert: true, returnDocument: "after", includeResultMetadata: true },
