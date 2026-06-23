@@ -112,7 +112,6 @@ async function insertOneSite({ collectionName = COLLECTION_NAME, payload }) {
         updatedAt: new Date(),
       },
       $setOnInsert: {
-        description: "",
         status: "active",
         icon: "",
         logo: "",
