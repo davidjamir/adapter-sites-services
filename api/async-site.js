@@ -103,6 +103,24 @@ module.exports = async (req, res) => {
           gaId: siteItem.analytics?.gaId || originItem.analytics?.gaId || "",
           gtmId: siteItem.analytics?.gtmId || originItem.analytics?.gtmId || "",
         },
+        socials: {
+          facebook: siteItem.socials?.facebook || originItem.socials?.facebook,
+          instagram:
+            siteItem.socials?.instagram || originItem.socials?.instagram,
+          threads: siteItem.socials?.threads || originItem.socials?.threads,
+          x: siteItem.socials?.x || originItem.socials?.x,
+          tiktok: siteItem.socials?.tiktok || originItem.socials?.tiktok,
+          youtube: siteItem.socials?.youtube || originItem.socials?.youtube,
+          telegram: siteItem.socials?.telegram || originItem.socials?.telegram,
+          reddit: siteItem.socials?.reddit || originItem.socials?.reddit,
+          pinterest:
+            siteItem.socials?.pinterest || originItem.socials?.pinterest,
+          discord: siteItem.socials?.discord || originItem.socials?.discord,
+          whatsapp: siteItem.socials?.whatsapp || originItem.socials?.whatsapp,
+          snapchat: siteItem.socials?.snapchat || originItem.socials?.snapchat,
+          twitch: siteItem.socials?.twitch || originItem.socials?.twitch,
+          linkedin: siteItem.socials?.linkedin || originItem.socials?.linkedin,
+        },
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
 
