@@ -91,13 +91,13 @@ module.exports = async (req, res) => {
             siteItem.config?.colorTextHeader ||
             originItem.config?.colorTextHeader,
           visibledBreadcrumb:
-            siteItem.config?.visibledBreadcrumb ||
+            siteItem.config?.visibledBreadcrumb ??
             originItem.config.visibledBreadcrumb,
           customOpengraphImage:
-            siteItem.config?.customOpengraphImage ||
+            siteItem.config?.customOpengraphImage ??
             originItem.config.customOpengraphImage,
           enabledAds:
-            siteItem.config?.enabledAds || originItem.config.enabledAds,
+            siteItem.config?.enabledAds ?? originItem.config.enabledAds,
         },
         analytics: {
           gaId: siteItem.analytics?.gaId || originItem.analytics?.gaId || "",
