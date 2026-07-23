@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
           baseUrl: `https://${item.domain}`,
           name: item.name,
           logo: item.logo || originItem.logo,
-          entity: item.entity,
+          entity: item.entity || item.name,
         };
 
         if (!item.league) {
