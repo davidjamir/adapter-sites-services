@@ -79,6 +79,7 @@ module.exports = async (req, res) => {
           name: item.name,
           logo: item.logo || originItem.logo,
           entity: item.entity || item.name,
+          colorBackground: item.config.colorHeader || originItem.config.colorHeader,
         };
 
         if (!item.league) {
