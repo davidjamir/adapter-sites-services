@@ -63,6 +63,9 @@ module.exports = async (req, res) => {
 
     const networks = [];
 
+    const leagueMap = new Map();
+    const generalSites = [];
+
     for (networkItem of originItem.networks) {
       const netItems = await site.getMany({
         filter: { networks: networkItem },
