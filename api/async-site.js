@@ -16,6 +16,10 @@ const {
   updateLatest,
 } = require("../src/r2upload");
 
+function toSlug(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, "-");
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "GET") {
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
@@ -54,6 +58,47 @@ module.exports = async (req, res) => {
       return res.status(404).json({
         ok: false,
         error: "Origin not found",
+      });
+    }
+
+    const networks = [];
+
+    for (networkItem of originItem.networks) {
+      const netItems = await site.getMany({
+        filter: { networks: networkItem },
+      });
+
+      for (const item of netItems) {
+        const site = {
+          id: item._id,
+          host: item.domain,
+          baseUrl: `https://${item.domain}`,
+          name: item.name,
+          logo: item.logo || originItem.logo,
+          entity: item.entity,
+        };
+
+        if (!item.league) {
+          generalSites.push(site);
+          continue;
+        }
+
+        if (!leagueMap.has(item.league)) {
+          leagueMap.set(item.league, {
+            slug: toSlug(item.league),
+            name: item.league,
+            sites: [],
+          });
+        }
+
+        leagueMap.get(item.league).sites.push(site);
+      }
+
+      networks.push({
+        slug: toSlug(networkItem),
+        name: networkItem,
+        leagues: [...leagueMap.values()],
+        generalSites,
       });
     }
 
@@ -121,6 +166,7 @@ module.exports = async (req, res) => {
           twitch: siteItem.socials?.twitch || originItem.socials?.twitch,
           linkedin: siteItem.socials?.linkedin || originItem.socials?.linkedin,
         },
+        networks,
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
 
