@@ -79,7 +79,8 @@ module.exports = async (req, res) => {
           name: item.name,
           logo: item.logo || originItem.logo,
           entity: item.entity || item.name,
-          colorBackground: item.config.colorHeader || originItem.config.colorHeader,
+          colorBackground:
+            item.config.colorHeader || originItem.config.colorHeader,
         };
 
         if (!item.league) {
@@ -147,6 +148,10 @@ module.exports = async (req, res) => {
             originItem.config.customOpengraphImage,
           enabledAds:
             siteItem.config?.enabledAds ?? originItem.config.enabledAds,
+          primaryColor:
+            siteItem.config?.primaryColor || originItem.config.primaryColor,
+          accentColor:
+            siteItem.config?.accentColor || originItem.config.accentColor,
         },
         analytics: {
           gaId: siteItem.analytics?.gaId || originItem.analytics?.gaId || "",
