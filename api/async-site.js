@@ -176,6 +176,8 @@ module.exports = async (req, res) => {
           linkedin: siteItem.socials?.linkedin || originItem.socials?.linkedin,
         },
         networks,
+        entity: siteItem.entity || "",
+        league: siteItem.league || "",
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
 
