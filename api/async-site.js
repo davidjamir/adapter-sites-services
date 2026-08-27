@@ -152,6 +152,12 @@ module.exports = async (req, res) => {
             siteItem.config?.primaryColor || originItem.config.primaryColor,
           accentColor:
             siteItem.config?.accentColor || originItem.config.accentColor,
+          symbolOg:
+            siteItem.config.symbolOg ||
+            siteItem.logo ||
+            originItem.logo ||
+            siteItem.icon ||
+            originItem.icon,
         },
         analytics: {
           gaId: siteItem.analytics?.gaId || originItem.analytics?.gaId || "",
