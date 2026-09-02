@@ -32,14 +32,14 @@ module.exports = async (req, res) => {
     const url = new URL(req.url, `https://${req.headers.host || "localhost"}`);
     const originValue = url.searchParams.get("origin");
     const domain = url.searchParams.get("domain");
-    const keyA = url.searchParams.get("keyA");
-    const keyB = url.searchParams.get("keyB");
-    const keyC = url.searchParams.get("keyC");
-    const keyD = url.searchParams.get("keyD");
-    const keyE = url.searchParams.get("keyE");
-    const keyF = url.searchParams.get("keyF");
-    const keyG = url.searchParams.get("keyG");
-    const keyH = url.searchParams.get("keyH");
+    const siteconfig = url.searchParams.get("siteconfig");
+    const adstxt = url.searchParams.get("adstxt");
+    const sitemapgeneral = url.searchParams.get("sitemapgeneral");
+    const sitemappage = url.searchParams.get("sitemappage");
+    const sitemapcategory = url.searchParams.get("sitemapcategory");
+    const robotstxt = url.searchParams.get("robotstxt");
+    const feedpost = url.searchParams.get("feedpost");
+    const latestpost = url.searchParams.get("latestpost");
 
     if (!originValue) {
       return res.status(400).json({
@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
     const leagueMap = new Map();
     const generalSites = [];
 
-    for (networkItem of originItem.networks) {
+    for (const networkItem of originItem.networks) {
       const netItems = await site.getMany({
         filter: { networks: networkItem },
       });
@@ -109,7 +109,7 @@ module.exports = async (req, res) => {
 
     const items = [];
 
-    for (siteItem of siteItems) {
+    for (const siteItem of siteItems) {
       const payload = {
         id: siteItem._id,
         host: siteItem.domain,
@@ -187,28 +187,28 @@ module.exports = async (req, res) => {
       };
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
 
-      if (keyA === "true") {
+      if (siteconfig === "true") {
         await updateSite(siteItem.domain, payload);
       }
-      if (keyB === "true") {
+      if (adstxt === "true") {
         await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
       }
-      if (keyC === "true") {
+      if (sitemapgeneral === "true") {
         await updateSitemapGeneral(siteItem.domain);
       }
-      if (keyD === "true") {
+      if (sitemappage === "true") {
         await updateSitemapPage(siteItem.domain, payload.pages);
       }
-      if (keyE === "true") {
+      if (sitemapcategory === "true") {
         await updateSitemapCategory(siteItem.domain, payload.categories);
       }
-      if (keyF === "true") {
+      if (robotstxt === "true") {
         await updateRobotsTxt(siteItem.domain, robotsTxt);
       }
-      if (keyG === "true") {
+      if (feedpost === "true") {
         await updateFeed(siteItem.domain);
       }
-      if (keyH === "true") {
+      if (latestpost === "true") {
         await updateLatest(siteItem.domain);
       }
 
