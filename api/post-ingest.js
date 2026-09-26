@@ -130,7 +130,7 @@ module.exports = async (req, res) => {
       mainCategory: payload.mainCategory,
       author: payload.author,
       tags: payload.tags || [],
-      indexDatabaseKey: siteItem.value.indexDatabaseKey,
+      indexDatabaseKey: siteItem.indexDatabaseKey,
     };
 
     const postIndex = await storageIndex.insert({
