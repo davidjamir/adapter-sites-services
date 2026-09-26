@@ -102,7 +102,7 @@ module.exports = async (req, res) => {
       };
 
       const r2ImageGen = await storage.saveImage(payloadImageGenerator);
-
+      console.log(r2ImageGen);
       // if (siteItem.cdn.saveFeaturedImage)
       //   payload.featuredImage = r2ImageGen.featuredImage;
       // if (siteItem.cdn.saveSocialPoster)
@@ -156,7 +156,6 @@ module.exports = async (req, res) => {
       r2storage,
       r2feed,
       r2latest,
-      r2ImageGen,
     });
     return res.status(200).json({
       ok: true,
