@@ -35,7 +35,12 @@ module.exports = async (req, res) => {
     }
 
     const configs = await dbConfigs.getManyDBConfigs({
-      filter: { mode: "read-write", status: "active" },
+      filter: {
+        type: "r2-database",
+        role: "data",
+        mode: "read-write",
+        status: "active",
+      },
     });
 
     const config = configs[randomInt(0, configs.length - 1)];
@@ -55,21 +60,71 @@ module.exports = async (req, res) => {
       }),
     };
 
+    const siteItem = await site.getOne({ domain: payload.domain });
+
+    if (siteItem.cdn.saveFeaturedImage || siteItem.cdn.saveSocialPoster) {
+      const originItem = await origin.getOne({ origin: originValue });
+
+      const payloadImageGenerator = {
+        id: generateHash(3),
+        origin: payload.origin,
+        host: payload.domain,
+        slug: payload.slug,
+        segment: payload.segment,
+        saveFeaturedImage: siteItem.cdn.saveFeaturedImage,
+        saveSocialPoster: siteItem.cdn.saveSocialPoster,
+        site: {
+          host: siteItem.domain,
+          name: siteItem.name,
+          entity: siteItem.entity || "",
+          config: {
+            customOpengraphImage:
+              siteItem.config?.customOpengraphImage ??
+              originItem.config.customOpengraphImage,
+            symbolOg:
+              siteItem.config.symbolOg ||
+              siteItem.logo ||
+              originItem.logo ||
+              siteItem.icon ||
+              originItem.icon,
+            primaryColor:
+              siteItem.config?.primaryColor || originItem.config.primaryColor,
+            accentColor:
+              siteItem.config?.accentColor || originItem.config.accentColor,
+          },
+        },
+        post: {
+          title: payload.title,
+          snippet: payload.snippet,
+          featuredImage: payload.featuredImage,
+          author: payload.author,
+        },
+      };
+
+      const r2ImageGen = await storage.saveImage(payloadImageGenerator);
+
+      // if (siteItem.cdn.saveFeaturedImage)
+      //   payload.featuredImage = r2ImageGen.featuredImage;
+      // if (siteItem.cdn.saveSocialPoster)
+      //   payload.socialPoster = r2ImageGen.socialPoster;
+    }
+
     const r2storage = await storage.insert(config.endpoint, payload);
 
     await origin.incItems({ origin: payload.origin });
-    const siteItem = await site.incItems({
+    await site.incItems({
       origin: payload.origin,
       domain: payload.domain,
     });
 
     const payloadIndex = {
-      domain: payload.domain,
       origin: payload.origin,
+      domain: payload.domain,
       title: payload.title,
       slug: payload.slug,
       snippet: payload.snippet,
       featuredImage: payload.featuredImage,
+      socialPoster: payload.socialPoster,
       segment: payload.segment,
       categories: payload.categories,
       mainCategory: payload.mainCategory,
