@@ -63,7 +63,7 @@ module.exports = async (req, res) => {
     const siteItem = await site.getOne({ domain: payload.domain });
 
     // if (siteItem.cdn.saveFeaturedImage || siteItem.cdn.saveSocialPoster) {
-    const originItem = await origin.getOne({ origin: originValue });
+    const originItem = await origin.getOne({ origin: siteItem.origin });
 
     const payloadImageGenerator = {
       id: generateHash(3),
