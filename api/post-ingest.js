@@ -156,6 +156,7 @@ module.exports = async (req, res) => {
       r2storage,
       r2feed,
       r2latest,
+      r2ImageGen,
     });
     return res.status(200).json({
       ok: true,
