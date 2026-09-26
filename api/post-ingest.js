@@ -77,6 +77,7 @@ module.exports = async (req, res) => {
           host: siteItem.domain,
           name: siteItem.name,
           entity: siteItem.entity || "",
+          theme: siteItem.theme || "news",
           config: {
             customOpengraphImage:
               siteItem.config?.customOpengraphImage ??
@@ -104,9 +105,10 @@ module.exports = async (req, res) => {
       const r2ImageGen = await storage.saveImage(payloadImageGenerator);
       console.log(r2ImageGen);
       // if (siteItem.cdn.saveFeaturedImage)
-      //   payload.featuredImage = r2ImageGen.featuredImage;
+      //   payload.featuredImage =
+      //     r2ImageGen.featuredImage ?? payload.featuredImage;
       // if (siteItem.cdn.saveSocialPoster)
-      //   payload.socialPoster = r2ImageGen.socialPoster;
+      //   payload.socialPoster = r2ImageGen.socialPoster ?? payload.socialPoster;
     }
 
     const r2storage = await storage.insert(config.endpoint, payload);
