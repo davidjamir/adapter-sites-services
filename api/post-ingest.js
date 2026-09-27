@@ -62,54 +62,54 @@ module.exports = async (req, res) => {
 
     const siteItem = await site.getOne({ domain: payload.domain });
 
-    // if (siteItem.cdn.saveFeaturedImage || siteItem.cdn.saveSocialPoster) {
-    const originItem = await origin.getOne({ origin: siteItem.origin });
+    if (siteItem.cdn.saveFeaturedImage || siteItem.cdn.saveSocialPoster) {
+      const originItem = await origin.getOne({ origin: siteItem.origin });
 
-    const payloadImageGenerator = {
-      id: generateHash(3),
-      origin: payload.origin,
-      host: payload.domain,
-      slug: payload.slug,
-      segment: payload.segment,
-      saveFeaturedImage: siteItem.cdn.saveFeaturedImage,
-      saveSocialPoster: siteItem.cdn.saveSocialPoster,
-      site: {
-        host: siteItem.domain,
-        name: siteItem.name,
-        entity: siteItem.entity || "",
-        theme: siteItem.theme || "news",
-        config: {
-          customOpengraphImage:
-            siteItem.config?.customOpengraphImage ??
-            originItem.config.customOpengraphImage,
-          symbolOg:
-            siteItem.config.symbolOg ||
-            siteItem.logo ||
-            originItem.logo ||
-            siteItem.icon ||
-            originItem.icon,
-          primaryColor:
-            siteItem.config?.primaryColor || originItem.config.primaryColor,
-          accentColor:
-            siteItem.config?.accentColor || originItem.config.accentColor,
+      const payloadImageGenerator = {
+        id: generateHash(3),
+        origin: payload.origin,
+        host: payload.domain,
+        slug: payload.slug,
+        segment: payload.segment,
+        saveFeaturedImage: siteItem.cdn.saveFeaturedImage,
+        saveSocialPoster: siteItem.cdn.saveSocialPoster,
+        site: {
+          host: siteItem.domain,
+          name: siteItem.name,
+          entity: siteItem.entity || "",
+          theme: siteItem.theme || "news",
+          config: {
+            customOpengraphImage:
+              siteItem.config?.customOpengraphImage ??
+              originItem.config.customOpengraphImage,
+            symbolOg:
+              siteItem.config.symbolOg ||
+              siteItem.logo ||
+              originItem.logo ||
+              siteItem.icon ||
+              originItem.icon,
+            primaryColor:
+              siteItem.config?.primaryColor || originItem.config.primaryColor,
+            accentColor:
+              siteItem.config?.accentColor || originItem.config.accentColor,
+          },
         },
-      },
-      post: {
-        title: payload.title,
-        snippet: payload.snippet,
-        featuredImage: payload.featuredImage,
-        author: payload.author,
-      },
-    };
+        post: {
+          title: payload.title,
+          snippet: payload.snippet,
+          featuredImage: payload.featuredImage,
+          author: payload.author,
+        },
+      };
 
-    const r2ImageGen = await storage.saveImage(payloadImageGenerator);
-    console.log(r2ImageGen);
-    // if (siteItem.cdn.saveFeaturedImage)
-    //   payload.featuredImage =
-    //     r2ImageGen.featuredImage ?? payload.featuredImage;
-    // if (siteItem.cdn.saveSocialPoster)
-    //   payload.socialPoster = r2ImageGen.socialPoster ?? payload.socialPoster;
-    // }
+      const r2ImageGen = await storage.saveImage(payloadImageGenerator);
+      console.log(r2ImageGen);
+      // if (siteItem.cdn.saveFeaturedImage)
+      //   payload.featuredImage =
+      //     r2ImageGen.featuredImage ?? payload.featuredImage;
+      // if (siteItem.cdn.saveSocialPoster)
+      //   payload.socialPoster = r2ImageGen.socialPoster ?? payload.socialPoster;
+    }
 
     const r2storage = await storage.insert(config.endpoint, payload);
 
