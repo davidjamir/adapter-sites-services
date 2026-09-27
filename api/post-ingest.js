@@ -70,7 +70,6 @@ module.exports = async (req, res) => {
         origin: payload.origin,
         host: payload.domain,
         slug: payload.slug,
-        segment: payload.segment,
         saveFeaturedImage: siteItem.cdn.saveFeaturedImage,
         saveSocialPoster: siteItem.cdn.saveSocialPoster,
         site: {
@@ -97,6 +96,7 @@ module.exports = async (req, res) => {
         post: {
           title: payload.title,
           snippet: payload.snippet,
+          segment: payload.segment,
           featuredImage: payload.featuredImage,
           author: payload.author,
         },
