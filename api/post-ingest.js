@@ -72,6 +72,7 @@ module.exports = async (req, res) => {
         slug: payload.slug,
         saveFeaturedImage: siteItem.cdn.saveFeaturedImage,
         saveSocialPoster: siteItem.cdn.saveSocialPoster,
+        saveThumbnailImage: siteItem.cdn.saveThumbnailImage,
         site: {
           host: siteItem.domain,
           name: siteItem.name,
@@ -108,7 +109,10 @@ module.exports = async (req, res) => {
         payload.featuredImage =
           r2ImageGen.featuredImage ?? payload.featuredImage;
       if (siteItem.cdn.saveSocialPoster)
-        payload.socialPoster = r2ImageGen.socialPoster ?? payload.socialPoster;
+        payload.socialPoster = r2ImageGen.socialPoster;
+      if (siteItem.cdn.saveThumbnailImage) {
+        payload.thumbnailImage = r2ImageGen.socialPoster;
+      }
     }
 
     const r2storage = await storage.insert(config.endpoint, payload);
@@ -126,6 +130,7 @@ module.exports = async (req, res) => {
       slug: payload.slug,
       snippet: payload.snippet,
       featuredImage: payload.featuredImage,
+      thumbnailImage: payload.thumbnailImage,
       socialPoster: payload.socialPoster,
       segment: payload.segment,
       categories: payload.categories,
