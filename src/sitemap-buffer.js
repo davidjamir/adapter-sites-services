@@ -24,7 +24,7 @@ async function insert(input) {
     });
 
     // Update sitemap.xml when insert new a sitemap-post
-    await updateSitemapGeneral(payload.domain);
+    await updateSitemapGeneral(payload.origin, payload.domain);
   }
 
   const result = await db.insertOneItem({

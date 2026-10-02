@@ -147,13 +147,14 @@ module.exports = async (req, res) => {
 
     const newItemSitemapBuffer = await sitemapBuffer.insert({
       payload: {
+        origin: payload.origin,
         domain: payload.domain,
         url: `https://${payload.domain}/post/${payload.segment}/${payload.slug}`,
       },
     });
 
-    const r2feed = await updateFeed(payload.domain);
-    const r2latest = await updateLatest(payload.domain);
+    const r2feed = await updateFeed(payload.origin, payload.domain);
+    const r2latest = await updateLatest(payload.origin, payload.domain);
 
     console.log({
       title: payload.title,

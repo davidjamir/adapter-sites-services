@@ -15,9 +15,9 @@ const attr = (s = "") =>
     .replace(/>/g, "&gt;")
     .replace(/'/g, "&apos;");
 
-async function uploadR2General(domain, contentType, key, payload) {
+async function uploadR2General(origin, domain, contentType, key, payload) {
   const res = await fetch(
-    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${domain}/${key}`,
+    `${process.env.ENDPOINT_STORAGE_GENERAL_R2}/${origin}/${domain}/${key}`,
     {
       method: "PUT",
       headers: {
@@ -150,12 +150,18 @@ async function genFeed(domain) {
     </rss>`;
 }
 
-export async function updateFeed(domain) {
+export async function updateFeed(origin, domain) {
   const xmlBody = await genFeed(domain);
-  return await uploadR2General(domain, "application/xml", "feed.xml", xmlBody);
+  return await uploadR2General(
+    origin,
+    domain,
+    "application/xml",
+    "feed.xml",
+    xmlBody,
+  );
 }
 
-export async function updateLatest(domain) {
+export async function updateLatest(origin, domain) {
   const siteItem = await site.getOne({ domain });
   const posts = await getLatestPosts(
     domain,
@@ -170,6 +176,7 @@ export async function updateLatest(domain) {
   };
 
   return await uploadR2General(
+    origin,
     domain,
     "application/json",
     "latest.json",
@@ -177,16 +184,29 @@ export async function updateLatest(domain) {
   );
 }
 
-export async function updateAdsTxt(domain, payload) {
-  return await uploadR2General(domain, "text/plain", "ads.txt", payload);
-}
-
-export async function updateRobotsTxt(domain, payload) {
-  return await uploadR2General(domain, "text/plain", "robots.txt", payload);
-}
-
-export async function updateSite(domain, payload) {
+export async function updateAdsTxt(origin, domain, payload) {
   return await uploadR2General(
+    origin,
+    domain,
+    "text/plain",
+    "ads.txt",
+    payload,
+  );
+}
+
+export async function updateRobotsTxt(origin, domain, payload) {
+  return await uploadR2General(
+    origin,
+    domain,
+    "text/plain",
+    "robots.txt",
+    payload,
+  );
+}
+
+export async function updateSite(origin, domain, payload) {
+  return await uploadR2General(
+    origin,
     domain,
     "application/json",
     "site.json",
@@ -230,9 +250,10 @@ export async function genSitemapGeneral(domain) {
 </urlset>`;
 }
 
-export async function updateSitemapGeneral(domain) {
+export async function updateSitemapGeneral(origin, domain) {
   const xmlSitemap = await genSitemapGeneral(domain);
   return await uploadR2General(
+    origin,
     domain,
     "application/xml",
     "sitemap.xml",
@@ -254,9 +275,10 @@ export async function genSitemapItem(items) {
 </urlset>`;
 }
 
-export async function updateSitemapItem(domain, id, items) {
+export async function updateSitemapItem(origin, domain, id, items) {
   const xmlSitemapItem = await genSitemapItem(items);
   return await uploadR2General(
+    origin,
     domain,
     "application/xml",
     `sitemap-post/${id}.xml`,
@@ -280,9 +302,10 @@ ${pages
 </urlset>`;
 }
 
-export async function updateSitemapPage(domain, pages) {
+export async function updateSitemapPage(origin, domain, pages) {
   const xmlSitemapPageItem = await genSitemapPageItems(domain, pages);
   return await uploadR2General(
+    origin,
     domain,
     "application/xml",
     `sitemap-page.xml`,
@@ -306,12 +329,13 @@ ${categories
 </urlset>`;
 }
 
-export async function updateSitemapCategory(domain, categories) {
+export async function updateSitemapCategory(origin, domain, categories) {
   const xmlSitemapCategoryItem = await genSitemapCategoryItems(
     domain,
     categories,
   );
   return await uploadR2General(
+    origin,
     domain,
     "application/xml",
     `sitemap-category.xml`,

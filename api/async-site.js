@@ -188,28 +188,28 @@ module.exports = async (req, res) => {
       const robotsTxt = `User-agent: *\nAllow: /\nDisallow: /admin\n\nHost: ${payload.baseUrl}\nSitemap: ${payload.baseUrl}/sitemap.xml`;
 
       if (siteconfig === "true") {
-        await updateSite(siteItem.domain, payload);
+        await updateSite(siteItem.origin, siteItem.domain, payload);
       }
       if (adstxt === "true") {
-        await updateAdsTxt(siteItem.domain, payload.ads?.adsTxt);
+        await updateAdsTxt(siteItem.origin, siteItem.domain, payload.ads?.adsTxt);
       }
       if (sitemapgeneral === "true") {
-        await updateSitemapGeneral(siteItem.domain);
+        await updateSitemapGeneral(siteItem.origin, siteItem.domain);
       }
       if (sitemappage === "true") {
-        await updateSitemapPage(siteItem.domain, payload.pages);
+        await updateSitemapPage(siteItem.origin, siteItem.domain, payload.pages);
       }
       if (sitemapcategory === "true") {
-        await updateSitemapCategory(siteItem.domain, payload.categories);
+        await updateSitemapCategory(siteItem.origin, siteItem.domain, payload.categories);
       }
       if (robotstxt === "true") {
-        await updateRobotsTxt(siteItem.domain, robotsTxt);
+        await updateRobotsTxt(siteItem.origin, siteItem.domain, robotsTxt);
       }
       if (feedpost === "true") {
-        await updateFeed(siteItem.domain);
+        await updateFeed(siteItem.origin, siteItem.domain);
       }
       if (latestpost === "true") {
-        await updateLatest(siteItem.domain);
+        await updateLatest(siteItem.origin, siteItem.domain);
       }
 
       items.push(payload.host);
